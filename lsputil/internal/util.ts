@@ -12,7 +12,11 @@ export async function normalizeBufnr(
   bufnr: number,
 ): Promise<number> {
   bufnr = bufnr === 0 ? await fn.bufnr(denops) : bufnr;
-  await fn.bufload(denops, bufnr);
+  try {
+    await fn.bufload(denops, bufnr);
+  } catch {
+    throw new Error(`Invalid bufnr: ${bufnr}`);
+  }
   await op.buflisted.setBuffer(denops, bufnr, true);
   return bufnr;
 }
