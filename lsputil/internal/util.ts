@@ -22,14 +22,15 @@ export async function normalizeBufnr(
 }
 
 /**
- * Returns true if position 'a' is before or at the same position as 'b'.
+ * Returns true if position 'a' is before position as 'b'.
+ * If 'a' and 'b' are in same position, return false.
  */
 export function isPositionBefore(
   a: LSP.Position,
   b: LSP.Position,
 ): boolean {
   return a.line < b.line ||
-    (a.line === b.line && a.character <= b.character);
+    (a.line === b.line && a.character < b.character);
 }
 
 export function createRange(

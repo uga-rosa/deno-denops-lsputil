@@ -21,10 +21,10 @@ export function normalizeRange(
   range: LSP.Range,
 ): LSP.Range {
   const { start, end } = range;
-  if (isPositionBefore(start, end)) {
-    return range;
+  if (isPositionBefore(end, start)) {
+    return { start: end, end: start };
   }
-  return { start: end, end: start };
+  return range;
 }
 
 export async function checkRange(

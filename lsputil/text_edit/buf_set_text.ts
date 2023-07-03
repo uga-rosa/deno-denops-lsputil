@@ -10,7 +10,7 @@ export async function bufSetText(
   range: LSP.Range,
   replacement: string[],
 ): Promise<void> {
-  if (!isPositionBefore(range.start, range.end)) {
+  if (isPositionBefore(range.end, range.start)) {
     throw new LSPRangeError(`'start' is higher than 'end'`);
   }
   bufnr = await normalizeBufnr(denops, bufnr);
