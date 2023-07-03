@@ -18,10 +18,17 @@ export class LSPRangeError extends Error {
   }
 }
 
-export async function checkRange(
+/**
+ * Verify the validity of a specified range within the buffer.
+ *
+ * The range is provided as a 0-based utf-16 offset.
+ * The function verifies that this range lies within the limits of the buffer.
+ *
+ * If the range is out of bounds, an error `LSPRangeError` is thrown.
+ */
+export async function verifyRange(
   denops: Denops,
   bufnr: number,
-  /** utf-16 offset, 0-based */
   range: LSP.Range,
 ): Promise<{
   startRow: number;
@@ -53,7 +60,9 @@ export async function checkRange(
   return { startRow, endRow, startLine, endLine };
 }
 
-/** Don't check range */
+/**
+ * Convert offset in utf-8|utf-16|utf-32 to offset in utf-8.
+ */
 export async function toUtf8Range(
   denops: Denops,
   bufnr: number,
@@ -67,7 +76,9 @@ export async function toUtf8Range(
   return await encode(denops, bufnr, range, toUtf8Index, offsetEncoding);
 }
 
-/** Don't check range */
+/**
+ * Convert offset in utf-8|utf-16|utf-32 to offset in utf-16.
+ */
 export async function toUtf16Range(
   denops: Denops,
   bufnr: number,
@@ -81,7 +92,9 @@ export async function toUtf16Range(
   return await encode(denops, bufnr, range, toUtf16Index, offsetEncoding);
 }
 
-/** Don't check range */
+/**
+ * Convert offset in utf-8|utf-16|utf-32 to offset in utf-32.
+ */
 export async function toUtf32Range(
   denops: Denops,
   bufnr: number,

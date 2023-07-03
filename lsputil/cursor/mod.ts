@@ -1,7 +1,10 @@
 import { Denops, fn, LSP } from "../deps.ts";
 import { toUtf16Index, toUtf8Index } from "../offset_encoding/mod.ts";
 
-/** utf-16 offset, 0-based */
+/*
+ * Get the cursor position.
+ * 0-based and columns are utf-16 offset.
+ */
 export async function getCursor(
   denops: Denops,
 ): Promise<LSP.Position> {
@@ -11,7 +14,10 @@ export async function getCursor(
   return { line: row - 1, character };
 }
 
-/** utf-16 offset, 0-based */
+/*
+ * Set the cursor to the position.
+ * 0-based and columns are utf-16 offset.
+ */
 export async function setCursor(
   denops: Denops,
   position: LSP.Position,

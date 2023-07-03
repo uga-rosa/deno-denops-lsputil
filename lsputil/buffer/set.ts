@@ -1,16 +1,16 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
 import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
-import { checkRange, LSPRangeError } from "../range/mod.ts";
+import { verifyRange, LSPRangeError } from "../range/mod.ts";
 
 /**
- * Sets (replaces) a range in the buffer
+ * Replaces a specific range within the buffer.
  *
- * Both rows and columns are 0-based, columns are the number of UTF-16 code units
+ * 0-based and columns are utf-16 offset.
  *
- * To insert text at a given `(row, column)` location, use `start_row =
- * end_row = row` and `start_col = end_col = col`. To delete the text in a
- * range, use `replacement = {}`.
+ * If 'start' and 'end' are identical, this method performs an insertion
+ * operation. If 'replacement' is an empty array (`[]`), this method performs a
+ * deletion operation within the specified range.
  */
 export async function setText(
   denops: Denops,
@@ -29,7 +29,7 @@ export async function setText(
     endRow,
     startLine,
     endLine,
-  } = await checkRange(denops, bufnr, range);
+  } = await verifyRange(denops, bufnr, range);
 
   if (denops.meta.host === "nvim") {
     const startCol = toUtf8Index(startLine, range.start.character, "utf-16");

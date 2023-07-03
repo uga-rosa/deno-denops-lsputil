@@ -2,7 +2,7 @@ import { Denops, fn } from "../deps.ts";
 
 /**
  * Context of the line where the cursor is.
- * The character is utf-16 offset and 0-based.
+ * 0-based and columns are utf-16 offset.
  */
 export class LineContext {
   character: number;

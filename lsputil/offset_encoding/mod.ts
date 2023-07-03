@@ -10,14 +10,14 @@ export type OffsetEncoding = UTF8 | UTF16 | UTF32;
 /**
  * Character offsets count UTF-8 code units (e.g bytes).
  */
-type UTF8 = "utf-8";
+export type UTF8 = "utf-8";
 
 /**
  * Character offsets count UTF-16 code units.
  *
  * This is the default and must always be supported by servers
  */
-type UTF16 = "utf-16";
+export type UTF16 = "utf-16";
 
 /**
  * Character offsets count UTF-32 code units.
@@ -26,8 +26,11 @@ type UTF16 = "utf-16";
  * so this `PositionEncodingKind` may also be used for an
  * encoding-agnostic representation of character offsets.
  */
-type UTF32 = "utf-32";
+export type UTF32 = "utf-32";
 
+/**
+ * Convert offset in utf-8|utf-16|utf-32 to offset in utf-8.
+ */
 export function toUtf8Index(
   line: string,
   utfIndex: number,
@@ -40,6 +43,9 @@ export function toUtf8Index(
   return byteLength(line.slice(0, utf16Index));
 }
 
+/**
+ * Convert offset in utf-8|utf-16|utf-32 to offset in utf-16.
+ */
 export function toUtf16Index(
   line: string,
   utfIndex: number,
@@ -57,6 +63,9 @@ export function toUtf16Index(
   }
 }
 
+/**
+ * Convert offset in utf-8|utf-16|utf-32 to offset in utf-32.
+ */
 export function toUtf32Index(
   line: string,
   utfIndex: number,

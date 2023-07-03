@@ -4,7 +4,12 @@ import { createRange } from "../internal/util.ts";
 import { applyTextEdits } from "../text_edit/mod.ts";
 import { setCursor } from "../cursor/mod.ts";
 
-/** 'before' and 'after' are utf-16 offset */
+/*
+ * Replace the range of `before` and `after` the cursor with `text`.
+ * 0-based and columns are utf-16 offset.
+ *
+ * NOTE: Do not include line breaks in `text`.
+ */
 export async function linePatch(
   denops: Denops,
   before: number,
