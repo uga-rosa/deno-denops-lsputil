@@ -1,4 +1,4 @@
-import { Denops, fn, LSP } from "../deps.ts";
+import { Denops, fn, LSP, op } from "../deps.ts";
 
 const ENCODER = new TextEncoder();
 export function byteLength(
@@ -11,7 +11,10 @@ export async function normalizeBufnr(
   denops: Denops,
   bufnr: number,
 ): Promise<number> {
-  return bufnr === 0 ? await fn.bufnr(denops) : bufnr;
+  bufnr = bufnr === 0 ? await fn.bufnr(denops) : bufnr;
+  await fn.bufload(denops, bufnr);
+  await op.buflisted.setBuffer(denops, bufnr, true);
+  return bufnr;
 }
 
 /**
