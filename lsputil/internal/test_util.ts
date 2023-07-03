@@ -1,4 +1,4 @@
-import { Denops, assertEquals, fn } from "../deps.ts";
+import { assertEquals, Denops, fn } from "../deps.ts";
 import { byteLength } from "./util.ts";
 
 /** utf-8 offset, 1-based */
@@ -18,13 +18,18 @@ export function searchCursor(
 export async function setup(
   denops: Denops,
   lines: string[],
+  setCursor: boolean,
 ): Promise<number> {
   const bufnr = await fn.bufnr(denops);
   await fn.deletebufline(denops, bufnr, 1, "$");
   lines = [...lines];
-  const [row, col] = searchCursor(lines);
-  await fn.setbufline(denops, bufnr, 1, lines);
-  await fn.setpos(denops, ".", [bufnr, row, col, 0]);
+  if (setCursor) {
+    const [row, col] = searchCursor(lines);
+    await fn.setbufline(denops, bufnr, 1, lines);
+    await fn.setpos(denops, ".", [bufnr, row, col, 0]);
+  } else {
+    await fn.setbufline(denops, bufnr, 1, lines);
+  }
   return bufnr;
 }
 
@@ -32,18 +37,21 @@ export async function assertBuffer(
   denops: Denops,
   bufnr: number,
   expectedBuffer: string[],
+  checkCursor: boolean,
 ) {
   const actualBuffer = await fn.getbufline(denops, bufnr, 1, "$");
-  const [, actualRow, actualCol] = await fn.getpos(denops, ".");
-  const [expectedRow, expectedCol] = searchCursor(expectedBuffer);
+  if (checkCursor) {
+    const [, actualRow, actualCol] = await fn.getpos(denops, ".");
+    const [expectedRow, expectedCol] = searchCursor(expectedBuffer);
+    assertEquals(
+      [actualRow, actualCol],
+      [expectedRow, expectedCol],
+      "Cursor is different than expected.",
+    );
+  }
   assertEquals(
     actualBuffer,
     expectedBuffer,
     "Buffer is different than expected.",
-  );
-  assertEquals(
-    [actualRow, actualCol],
-    [expectedRow, expectedCol],
-    "Cursor is different than expected.",
   );
 }

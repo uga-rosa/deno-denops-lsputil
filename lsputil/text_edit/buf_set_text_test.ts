@@ -44,10 +44,9 @@ test({
         fn: async () => {
           const { range, replacement, expectedBuffer } =
             suites[mode as keyof typeof suites];
-
-          const bufnr = await setup(denops, origBuffer);
+          const bufnr = await setup(denops, origBuffer, true);
           await bufSetText(denops, bufnr, range, replacement);
-          await assertBuffer(denops, bufnr, expectedBuffer);
+          await assertBuffer(denops, bufnr, expectedBuffer, true);
         },
       });
     }
