@@ -1,5 +1,9 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
-import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
+import {
+  bufLineCount,
+  isPositionBefore,
+  normalizeBufnr,
+} from "../internal/util.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
 import { LSPRangeError, verifyRange } from "../range/mod.ts";
 
@@ -65,5 +69,53 @@ export async function setText(
     if (bufnr === await fn.bufnr(denops)) {
       await fn.setpos(denops, ".", cursor);
     }
+  }
+}
+
+/**
+ * Replaces a specific lines within the buffer.
+ *
+ * 0-based, end-exclusive.
+ * Negative indices are interpreted as length+1+index: -1 refers to the index
+ * past the end. So to change or delete the last element use start=-2 and end=-1.
+ */
+export async function setLines(
+  denops: Denops,
+  bufnr: number,
+  start: number,
+  end: number,
+  replacement: string[],
+) {
+  bufnr = await normalizeBufnr(denops, bufnr);
+  if (denops.meta.host === "nvim") {
+    await api.nvim_buf_set_lines(denops, bufnr, start, end, true, replacement);
+    return;
+  }
+  const lineCount = await bufLineCount(denops, bufnr);
+  // To 1-based
+  start = start >= 0 ? start + 1 : lineCount + start + 1;
+  end = end >= 0 ? end + 1 : lineCount + end + 1;
+
+  // Check range
+  if (start < 1 || start > lineCount) {
+    throw new LSPRangeError("start");
+  } else if (end < 1 || end > lineCount + 1) {
+    // end-exclusive
+    throw new LSPRangeError("end");
+  } else if (start > end) {
+    throw new LSPRangeError("'start' is higher than 'end'");
+  }
+
+  // Store cursor position
+  const cursor = await fn.getpos(denops, ".");
+  // Deleting the lines first may create an extra blank line.
+  await fn.appendbufline(denops, bufnr, end - 1, replacement);
+  await fn.deletebufline(denops, bufnr, start, end - 1);
+  // Restore cursor position if bufnr points the current buffer.
+  if (bufnr === await fn.bufnr(denops)) {
+    if (cursor[1] >= end) {
+      cursor[1] += replacement.length - (end - start);
+    }
+    await fn.setpos(denops, ".", cursor);
   }
 }
