@@ -1,7 +1,7 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
 import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
-import { checkRange, normalizeRange } from "../range/mod.ts";
+import { checkRange, LSPRangeError } from "../range/mod.ts";
 
 export async function bufSetText(
   denops: Denops,
@@ -10,8 +10,10 @@ export async function bufSetText(
   range: LSP.Range,
   replacement: string[],
 ): Promise<void> {
+  if (!isPositionBefore(range.start, range.end)) {
+    throw new LSPRangeError(`'start' is higher than 'end'`);
+  }
   bufnr = await normalizeBufnr(denops, bufnr);
-  range = normalizeRange(range);
 
   /** 1-based */
   const {
