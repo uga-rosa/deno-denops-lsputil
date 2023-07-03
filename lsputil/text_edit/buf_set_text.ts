@@ -69,8 +69,8 @@ export async function bufSetText(
         range.end.character,
       );
     }
+    // Deleting the lines first may create an extra blank line.
     await fn.appendbufline(denops, bufnr, endRow, replacement);
-    // If you delete lines first, you may get an extra blank line.
     await fn.deletebufline(denops, bufnr, startRow, endRow);
     // Restore cursor position
     await fn.setpos(denops, ".", cursor);
