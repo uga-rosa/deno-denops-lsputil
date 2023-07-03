@@ -1,7 +1,7 @@
 import { assertEquals, Denops, fn, test } from "../deps.ts";
 import { createRange } from "../internal/util.ts";
 import { searchCursor } from "../internal/test_util.ts";
-import { bufSetText } from "./mod.ts";
+import { bufSetText } from "./buf_set_text.ts";
 
 async function setup(
   denops: Denops,
