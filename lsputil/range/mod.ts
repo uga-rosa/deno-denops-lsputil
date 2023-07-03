@@ -51,6 +51,7 @@ export async function checkRange(
   return { startRow, endRow, startLine, endLine };
 }
 
+/** Don't check range */
 export async function toUtf8Range(
   denops: Denops,
   bufnr: number,
@@ -64,6 +65,7 @@ export async function toUtf8Range(
   return await encode(denops, bufnr, range, toUtf8Index, offsetEncoding);
 }
 
+/** Don't check range */
 export async function toUtf16Range(
   denops: Denops,
   bufnr: number,
@@ -77,6 +79,7 @@ export async function toUtf16Range(
   return await encode(denops, bufnr, range, toUtf16Index, offsetEncoding);
 }
 
+/** Don't check range */
 export async function toUtf32Range(
   denops: Denops,
   bufnr: number,
@@ -98,14 +101,13 @@ async function encode(
   offsetEncoding: OffsetEncoding = "utf-16",
 ): Promise<LSP.Range> {
   bufnr = await normalizeBufnr(denops, bufnr);
-  const { startLine, endLine } = await checkRange(denops, bufnr, range);
   range.start.character = encoder(
-    startLine,
+    (await fn.getbufline(denops, bufnr, range.start.line + 1))[0] ?? "",
     range.start.character,
     offsetEncoding,
   );
   range.end.character = encoder(
-    endLine,
+    (await fn.getbufline(denops, bufnr, range.end.line + 1))[0] ?? "",
     range.end.character,
     offsetEncoding,
   );
