@@ -1,76 +1,43 @@
-import { assertEquals, Denops, fn, test } from "../deps.ts";
+import { test } from "../deps.ts";
 import { createRange } from "../internal/util.ts";
-import { searchCursor } from "../internal/test_util.ts";
+import { assertBuffer, setup } from "../internal/test_util.ts";
 import { bufSetText } from "./buf_set_text.ts";
 
-async function setup(
-  denops: Denops,
-  lines: string[],
-): Promise<number> {
-  const bufnr = await fn.bufnr(denops);
-  await fn.deletebufline(denops, bufnr, 1, "$");
-  lines = [...lines];
-  const [row, col] = searchCursor(lines);
-  await fn.setbufline(denops, bufnr, 1, lines);
-  await fn.setpos(denops, ".", [bufnr, row, col, 0]);
-  return bufnr;
-}
+const origBuffer = [
+  "あいうえお",
+  "かきく|けこ",
+];
 
-async function assertBuffer(
-  denops: Denops,
-  bufnr: number,
-  expectedBuffer: string[],
-) {
-  const actualBuffer = await fn.getbufline(denops, bufnr, 1, "$");
-  const [, actualRow, actualCol] = await fn.getpos(denops, ".");
-  const [expectedRow, expectedCol] = searchCursor(expectedBuffer);
-  assertEquals(
-    actualBuffer,
-    expectedBuffer,
-    "Buffer is different than expected.",
-  );
-  assertEquals(
-    [actualRow, actualCol],
-    [expectedRow, expectedCol],
-    "Cursor is different than expected.",
-  );
-}
+const suites = {
+  insert: {
+    range: createRange(1, 3, 1, 3),
+    replacement: ["さし"],
+    expectedBuffer: [
+      "あいうえお",
+      "かきく|さしけこ",
+    ],
+  },
+  delete: {
+    range: createRange(0, 4, 1, 3),
+    replacement: [],
+    expectedBuffer: [
+      "あいう|えけこ",
+    ],
+  },
+  replace: {
+    range: createRange(0, 4, 1, 3),
+    replacement: ["さし", "すせ"],
+    expectedBuffer: [
+      "あいうえさし",
+      "すせけ|こ",
+    ],
+  },
+};
 
 test({
   mode: "all",
   name: "bufSetText()",
   fn: async (denops, t) => {
-    const origBuffer = [
-      "あいうえお",
-      "かきく|けこ",
-    ];
-
-    const suites = {
-      insert: {
-        range: createRange(1, 3, 1, 3),
-        replacement: ["さし"],
-        expectedBuffer: [
-          "あいうえお",
-          "かきく|さしけこ",
-        ],
-      },
-      delete: {
-        range: createRange(0, 4, 1, 3),
-        replacement: [],
-        expectedBuffer: [
-          "あいう|えけこ",
-        ],
-      },
-      replace: {
-        range: createRange(0, 4, 1, 3),
-        replacement: ["さし", "すせ"],
-        expectedBuffer: [
-          "あいうえさし",
-          "すせけ|こ",
-        ],
-      },
-    };
-
     for (const mode of Object.keys(suites)) {
       await t.step({
         name: mode,
