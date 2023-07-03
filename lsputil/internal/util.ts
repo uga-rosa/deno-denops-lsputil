@@ -1,10 +1,17 @@
-import { LSP } from "../deps.ts";
+import { Denops, fn, LSP } from "../deps.ts";
 
 const ENCODER = new TextEncoder();
 export function byteLength(
   s: string,
 ): number {
   return ENCODER.encode(s).length;
+}
+
+export async function normalizeBufnr(
+  denops: Denops,
+  bufnr: number,
+): Promise<number> {
+  return bufnr === 0 ? await fn.bufnr(denops) : bufnr;
 }
 
 /**
