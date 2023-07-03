@@ -44,3 +44,10 @@ export function createRange(
     end: { line: endLine, character: endCharacter },
   };
 }
+
+export async function bufLineCount(
+  denops: Denops,
+  bufnr: number,
+): Promise<number> {
+  return await denops.eval(`getbufinfo(${bufnr})[0].linecount`) as number;
+}
