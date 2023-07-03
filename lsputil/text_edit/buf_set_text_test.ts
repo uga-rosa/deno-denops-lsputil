@@ -38,12 +38,11 @@ test({
   mode: "all",
   name: "bufSetText()",
   fn: async (denops, t) => {
-    for (const mode of Object.keys(suites)) {
+    for (const [mode, suite] of Object.entries(suites)) {
+      const { range, replacement, expectedBuffer } = suite;
       await t.step({
         name: mode,
         fn: async () => {
-          const { range, replacement, expectedBuffer } =
-            suites[mode as keyof typeof suites];
           const bufnr = await setup(denops, origBuffer, true);
           await bufSetText(denops, bufnr, range, replacement);
           await assertBuffer(denops, bufnr, expectedBuffer, true);
