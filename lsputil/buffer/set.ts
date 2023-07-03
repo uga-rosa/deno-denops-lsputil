@@ -22,7 +22,6 @@ export async function setText(
     throw new LSPRangeError(`'start' is higher than 'end'`);
   }
   bufnr = await normalizeBufnr(denops, bufnr);
-
   /** 1-based */
   const {
     startRow,
@@ -62,7 +61,9 @@ export async function setText(
     // Deleting the lines first may create an extra blank line.
     await fn.appendbufline(denops, bufnr, endRow, replacement);
     await fn.deletebufline(denops, bufnr, startRow, endRow);
-    // Restore cursor position
-    await fn.setpos(denops, ".", cursor);
+    // Restore cursor position if bufnr points the current buffer.
+    if (bufnr === await fn.bufnr(denops)) {
+      await fn.setpos(denops, ".", cursor);
+    }
   }
 }
