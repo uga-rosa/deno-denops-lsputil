@@ -1,7 +1,7 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
 import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
-import { verifyRange, LSPRangeError } from "../range/mod.ts";
+import { LSPRangeError, verifyRange } from "../range/mod.ts";
 
 /**
  * Replaces a specific range within the buffer.
