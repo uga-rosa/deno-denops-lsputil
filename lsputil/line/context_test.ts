@@ -2,24 +2,38 @@ import { assertEquals, test } from "../deps.ts";
 import { LineContext } from "./context.ts";
 import { setup } from "../internal/test_util.ts";
 
-test({
-  name: "single byte line",
-  mode: "nvim",
-  fn: async (denops) => {
-    await setup(denops, ["foo|bar"], true);
-    const ctx = await LineContext.create(denops);
-    assertEquals(ctx.text, "foobar");
-    assertEquals(ctx.character, 3);
+const suites = {
+  "single byte": {
+    buffer: ["foo|bar"],
+    expected: {
+      text: "foobar",
+      character: 3,
+    },
   },
-});
+  "multi byte": {
+    buffer: ["あい😀|う"],
+    expected: {
+      text: "あい😀う",
+      character: 4,
+    },
+  },
+};
 
 test({
-  name: "multi byte line",
-  mode: "nvim",
-  fn: async (denops) => {
-    await setup(denops, ["あい😀|う"], true);
-    const ctx = await LineContext.create(denops);
-    assertEquals(ctx.text, "あい😀う");
-    assertEquals(ctx.character, 4);
+  name: "LineContext",
+  mode: "all",
+  fn: async (denops, t) => {
+    for (const [name, suite] of Object.entries(suites)) {
+      const { buffer, expected } = suite;
+      await t.step({
+        name,
+        fn: async () => {
+          await setup(denops, buffer, true);
+          const ctx = await LineContext.create(denops);
+          assertEquals(ctx.character, expected.character);
+          assertEquals(ctx.text, expected.text);
+        },
+      });
+    }
   },
 });

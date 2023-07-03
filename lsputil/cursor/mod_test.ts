@@ -4,7 +4,7 @@ import { getCursor, setCursor } from "./mod.ts";
 
 test({
   mode: "all",
-  name: "cursor",
+  name: "Set/Get cursor",
   fn: async (denops) => {
     const bufnr = await setup(denops, [
       "foobarbaz",

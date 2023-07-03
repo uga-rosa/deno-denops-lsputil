@@ -36,7 +36,7 @@ const suites = {
 
 test({
   mode: "all",
-  name: "bufSetText()",
+  name: "setText()",
   fn: async (denops, t) => {
     for (const [mode, suite] of Object.entries(suites)) {
       const { range, replacement, expectedBuffer } = suite;
