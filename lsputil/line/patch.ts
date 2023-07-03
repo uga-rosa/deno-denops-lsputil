@@ -1,5 +1,5 @@
 import { Denops, fn } from "../deps.ts";
-import { LineContext } from "../line_context/mod.ts";
+import { LineContext } from "./context.ts";
 import { createRange } from "../internal/util.ts";
 import { applyTextEdits } from "../text_edit/mod.ts";
 import { setCursor } from "../cursor/mod.ts";

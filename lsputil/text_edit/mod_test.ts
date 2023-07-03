@@ -1,5 +1,5 @@
 import { assertEquals, Fn, fn, test } from "../deps.ts";
-import { applyTextEdits } from "./text_edit.ts";
+import { applyTextEdits } from "./mod.ts";
 import { createRange } from "../internal/util.ts";
 import { assertBuffer, setup } from "../internal/test_util.ts";
 

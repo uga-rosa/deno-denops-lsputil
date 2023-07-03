@@ -1,11 +1,13 @@
 import { Denops, fn, LSP } from "../deps.ts";
-import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
+import { normalizeBufnr } from "../internal/util.ts";
 import {
   OffsetEncoding,
   toUtf16Index,
   toUtf32Index,
   toUtf8Index,
 } from "../offset_encoding/mod.ts";
+
+export { createRange } from "../internal/util.ts";
 
 export class LSPRangeError extends Error {
   static {
@@ -14,17 +16,6 @@ export class LSPRangeError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(`Out of range: ${message}`, options);
   }
-}
-
-/** Fix reversed range */
-export function normalizeRange(
-  range: LSP.Range,
-): LSP.Range {
-  const { start, end } = range;
-  if (isPositionBefore(end, start)) {
-    return { start: end, end: start };
-  }
-  return range;
 }
 
 export async function checkRange(

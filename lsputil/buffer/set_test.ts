@@ -1,55 +1,50 @@
 import { test } from "../deps.ts";
-import { linePatch } from "./mod.ts";
+import { createRange } from "../internal/util.ts";
 import { assertBuffer, setup } from "../internal/test_util.ts";
+import { setText } from "./set.ts";
 
 const origBuffer = [
-  "あいう|えお",
+  "あいうえお",
+  "かきく|けこ",
 ];
 
 const suites = {
   insert: {
-    patch: {
-      before: 0,
-      after: 0,
-      text: "かき",
-    },
+    range: createRange(1, 3, 1, 3),
+    replacement: ["さし"],
     expectedBuffer: [
-      "あいうかき|えお",
+      "あいうえお",
+      "かきく|さしけこ",
     ],
   },
   delete: {
-    patch: {
-      before: 2,
-      after: 1,
-      text: "",
-    },
+    range: createRange(0, 4, 1, 3),
+    replacement: [],
     expectedBuffer: [
-      "あ|お",
+      "あいう|えけこ",
     ],
   },
   replace: {
-    patch: {
-      before: 3,
-      after: 1,
-      text: "かきくけ",
-    },
+    range: createRange(0, 4, 1, 3),
+    replacement: ["さし", "すせ"],
     expectedBuffer: [
-      "かきくけ|お",
+      "あいうえさし",
+      "すせけ|こ",
     ],
   },
 };
 
 test({
   mode: "all",
-  name: "linePatch()",
+  name: "bufSetText()",
   fn: async (denops, t) => {
     for (const [mode, suite] of Object.entries(suites)) {
-      const { patch: { before, after, text }, expectedBuffer } = suite;
+      const { range, replacement, expectedBuffer } = suite;
       await t.step({
         name: mode,
         fn: async () => {
           const bufnr = await setup(denops, origBuffer, true);
-          await linePatch(denops, before, after, text);
+          await setText(denops, bufnr, range, replacement);
           await assertBuffer(denops, bufnr, expectedBuffer, true);
         },
       });

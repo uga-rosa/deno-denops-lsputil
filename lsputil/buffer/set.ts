@@ -3,10 +3,18 @@ import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
 import { checkRange, LSPRangeError } from "../range/mod.ts";
 
-export async function bufSetText(
+/**
+ * Sets (replaces) a range in the buffer
+ *
+ * Both rows and columns are 0-based, columns are the number of UTF-16 code units
+ *
+ * To insert text at a given `(row, column)` location, use `start_row =
+ * end_row = row` and `start_col = end_col = col`. To delete the text in a
+ * range, use `replacement = {}`.
+ */
+export async function setText(
   denops: Denops,
   bufnr: number,
-  /** utf-16 offset, 0-based */
   range: LSP.Range,
   replacement: string[],
 ): Promise<void> {

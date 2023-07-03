@@ -1,5 +1,5 @@
 import { assertEquals, test } from "../deps.ts";
-import { LineContext } from "./mod.ts";
+import { LineContext } from "./context.ts";
 import { setup } from "../internal/test_util.ts";
 
 test({
