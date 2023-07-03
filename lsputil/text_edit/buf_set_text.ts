@@ -1,7 +1,7 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
 import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
-import { checkRange } from "../range/mod.ts";
+import { checkRange, normalizeRange } from "../range/mod.ts";
 
 export async function bufSetText(
   denops: Denops,
@@ -11,12 +11,7 @@ export async function bufSetText(
   replacement: string[],
 ): Promise<void> {
   bufnr = await normalizeBufnr(denops, bufnr);
-
-  // Fix reversed range
-  const { start, end } = range;
-  if (!isPositionBefore(start, end)) {
-    range = { start: end, end: start };
-  }
+  range = normalizeRange(range);
 
   /** 1-based */
   const {
