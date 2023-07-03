@@ -17,18 +17,19 @@ export function searchCursor(
 
 export async function setup(
   denops: Denops,
-  lines: string[],
+  buffer: string[],
   setCursor: boolean,
 ): Promise<number> {
   const bufnr = await fn.bufnr(denops);
   await fn.deletebufline(denops, bufnr, 1, "$");
-  lines = [...lines];
   if (setCursor) {
-    const [row, col] = searchCursor(lines);
-    await fn.setbufline(denops, bufnr, 1, lines);
+    // Copy; searchCursor() mutates buffer.
+    buffer = [...buffer];
+    const [row, col] = searchCursor(buffer);
+    await fn.setbufline(denops, bufnr, 1, buffer);
     await fn.setpos(denops, ".", [bufnr, row, col, 0]);
   } else {
-    await fn.setbufline(denops, bufnr, 1, lines);
+    await fn.setbufline(denops, bufnr, 1, buffer);
   }
   return bufnr;
 }
@@ -42,6 +43,8 @@ export async function assertBuffer(
   const actualBuffer = await fn.getbufline(denops, bufnr, 1, "$");
   if (checkCursor) {
     const [, actualRow, actualCol] = await fn.getpos(denops, ".");
+    // Copy; searchCursor() mutates buffer.
+    expectedBuffer = [...expectedBuffer];
     const [expectedRow, expectedCol] = searchCursor(expectedBuffer);
     assertEquals(
       [actualRow, actualCol],

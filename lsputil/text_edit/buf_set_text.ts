@@ -49,6 +49,7 @@ export async function bufSetText(
         endLine.slice(range.end.character),
       ];
     } else {
+      replacement = [...replacement];
       replacement[0] = startLine.slice(0, range.start.character) +
         replacement[0];
       replacement[replacement.length - 1] += endLine.slice(range.end.character);
