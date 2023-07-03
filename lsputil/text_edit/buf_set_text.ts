@@ -1,42 +1,7 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
-import { LSPRangeError } from "./mod.ts";
 import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
-
-export async function checkRange(
-  denops: Denops,
-  bufnr: number,
-  /** utf-16 offset, 0-based */
-  range: LSP.Range,
-): Promise<{
-  startRow: number;
-  endRow: number;
-  startLine: string;
-  endLine: string;
-}> {
-  /** 1-based */
-  const startRow = range.start.line + 1;
-  const startLine = (await fn.getbufline(denops, bufnr, startRow))[0];
-  /** 1-based */
-  const endRow = range.end.line + 1;
-  const endLine = (await fn.getbufline(denops, bufnr, endRow))[0];
-
-  // Check range
-  if (startLine === undefined) {
-    throw new LSPRangeError("start row");
-  }
-  if (endLine === undefined) {
-    throw new LSPRangeError("end row");
-  }
-  if (range.start.character < 0 || range.start.character > startLine.length) {
-    throw new LSPRangeError("start col");
-  }
-  if (range.end.character < 0 || range.end.character > endLine.length) {
-    throw new LSPRangeError("end col");
-  }
-
-  return { startRow, endRow, startLine, endLine };
-}
+import { checkRange } from "../range/mod.ts";
 
 export async function bufSetText(
   denops: Denops,
