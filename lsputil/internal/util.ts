@@ -24,3 +24,15 @@ export function isPositionBefore(
   return a.line < b.line ||
     (a.line === b.line && a.character <= b.character);
 }
+
+export function createRange(
+  startLine: number,
+  startCharacter: number,
+  endLine: number,
+  endCharacter: number,
+): LSP.Range {
+  return {
+    start: { line: startLine, character: startCharacter },
+    end: { line: endLine, character: endCharacter },
+  };
+}
