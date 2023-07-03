@@ -8,36 +8,36 @@ const origBuffer = [
   "かきく|けこ",
 ];
 
-const suites = {
-  insert: {
-    range: createRange(1, 3, 1, 3),
-    replacement: ["さし"],
-    expectedBuffer: [
-      "あいうえお",
-      "かきく|さしけこ",
-    ],
-  },
-  delete: {
-    range: createRange(0, 4, 1, 3),
-    replacement: [],
-    expectedBuffer: [
-      "あいう|えけこ",
-    ],
-  },
-  replace: {
-    range: createRange(0, 4, 1, 3),
-    replacement: ["さし", "すせ"],
-    expectedBuffer: [
-      "あいうえさし",
-      "すせけ|こ",
-    ],
-  },
-};
-
 test({
   mode: "all",
   name: "setText()",
   fn: async (denops, t) => {
+    const suites = {
+      insert: {
+        range: createRange(1, 3, 1, 3),
+        replacement: ["さし"],
+        expectedBuffer: [
+          "あいうえお",
+          "かきく|さしけこ",
+        ],
+      },
+      delete: {
+        range: createRange(0, 4, 1, 3),
+        replacement: [],
+        expectedBuffer: [
+          "あいう|えけこ",
+        ],
+      },
+      replace: {
+        range: createRange(0, 4, 1, 3),
+        replacement: ["さし", "すせ"],
+        expectedBuffer: [
+          "あいうえさし",
+          "すせけ|こ",
+        ],
+      },
+    };
+
     for (const [mode, suite] of Object.entries(suites)) {
       const { range, replacement, expectedBuffer } = suite;
       await t.step({
