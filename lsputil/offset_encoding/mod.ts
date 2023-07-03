@@ -1,3 +1,5 @@
+import { byteLength } from "../internal/util.ts";
+
 /**
  * A type indicating how positions are encoded,
  * specifically what column offsets mean.
@@ -69,13 +71,6 @@ export function toUtf32Index(
 
 const ENCODER = new TextEncoder();
 const DECODER = new TextDecoder();
-
-function byteLength(
-  s: string,
-): number {
-  return ENCODER.encode(s).length;
-}
-
 function sliceByByteIndex(
   s: string,
   start?: number,
