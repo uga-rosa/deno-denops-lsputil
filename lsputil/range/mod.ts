@@ -1,5 +1,5 @@
 import { Denops, fn, LSP } from "../deps.ts";
-import { normalizeBufnr } from "../internal/util.ts";
+import { bufLineCount, normalizeBufnr } from "../internal/util.ts";
 import {
   OffsetEncoding,
   toUtf16Index,
@@ -22,7 +22,8 @@ export class LSPRangeError extends Error {
  * Verify the validity of a specified range within the buffer.
  *
  * The range is provided as a 0-based utf-16 offset.
- * The function verifies that this range lies within the limits of the buffer.
+ *
+ * The return values `startRow` and `endRow` are 1-based.
  *
  * If the range is out of bounds, an error `LSPRangeError` is thrown.
  */
@@ -58,6 +59,46 @@ export async function verifyRange(
   }
 
   return { startRow, endRow, startLine, endLine };
+}
+
+/**
+ * Verify the validity of a specified line-range within the buffer.
+ *
+ * The line-range is provided as a 0-based, end-exclusive.
+ * Negative indices are interpreted as length+1+index: -1 refers to the index
+ * past the end.
+ *
+ * The return values `startRow` and `endRow` are 1-based.
+ *
+ * If the range is out of bounds, an error `LSPRangeError` is thrown.
+ */
+export async function verifyLineRange(
+  denops: Denops,
+  bufnr: number,
+  start: number,
+  end: number,
+): Promise<{
+  startRow: number;
+  endRow: number;
+}> {
+  const lineCount = await bufLineCount(denops, bufnr);
+  // To 1-based
+  const startRow = start >= 0 ? start + 1 : lineCount + start + 1;
+  const endRow = end >= 0 ? end + 1 : lineCount + end + 1;
+
+  // Check range
+  if (startRow < 1 || startRow > lineCount) {
+    throw new LSPRangeError("start");
+  }
+  if (endRow < 1 || endRow > lineCount + 1) {
+    // end-exclusive
+    throw new LSPRangeError("end");
+  }
+  if (startRow > endRow) {
+    throw new LSPRangeError("'start' is higher than 'end'");
+  }
+
+  return { startRow, endRow };
 }
 
 /**
