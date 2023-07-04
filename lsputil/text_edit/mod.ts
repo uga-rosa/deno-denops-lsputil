@@ -8,7 +8,7 @@ import {
 } from "../internal/util.ts";
 import { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Range } from "../range/mod.ts";
-import { setText } from "../buffer/mod.ts";
+import { getLine, setText } from "../buffer/mod.ts";
 
 function normalizeRange(
   range: LSP.Range,
@@ -68,16 +68,20 @@ export async function applyTextEdits(
       // Append lines to the end
       await fn.appendbufline(denops, bufnr, "$", replacement);
     } else {
-      const lastLine = (await fn.getbufline(denops, bufnr, "$"))[0];
+      const endLine = await getLine(
+        denops,
+        bufnr,
+        Math.min(range.end.line, lineCount - 1),
+      );
       // Fix range
       if (range.end.line >= lineCount) {
         // Some LSP servers may return +1 range of the buffer content
         range.end = {
           line: lineCount - 1,
-          character: lastLine.length,
+          character: endLine.length,
         };
-      } else if (range.end.character > lastLine.length) {
-        range.end.character = lastLine.length;
+      } else if (range.end.character > endLine.length) {
+        range.end.character = endLine.length;
         if (newText.endsWith("\n")) {
           // Properly handling replacement that go beyond the end of a line,
           // and ensuring no extra empty lines are added.
