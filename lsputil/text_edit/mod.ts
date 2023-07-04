@@ -113,7 +113,7 @@ export async function applyTextEdits(
   await Promise.all(markInfo.map(async (info) => {
     // row
     info.pos[1] = Math.min(info.pos[1], lineCount);
-    const line = (await fn.getbufline(denops, bufnr, info.pos[1]))[0];
+    const line = await getLine(denops, bufnr, info.pos[1] - 1);
     // col
     info.pos[2] = Math.min(info.pos[2], byteLength(line));
     await fn.setpos(denops, info.mark, info.pos);
@@ -121,7 +121,7 @@ export async function applyTextEdits(
 
   // Apply fixed cursor position
   if (isCursorFixed) {
-    const line = (await fn.getbufline(denops, bufnr, cursor.line + 1))[0];
+    const line = await getLine(denops, bufnr, cursor.line);
     if (cursor.line < lineCount && cursor.character <= line.length) {
       await setCursor(denops, cursor);
     }
