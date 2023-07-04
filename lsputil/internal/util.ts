@@ -34,6 +34,16 @@ export function isPositionBefore(
 }
 
 /**
+ * A Utility function for creating `LSP.Position` object.
+ */
+export function createPosition(
+  line: number,
+  character: number,
+): LSP.Position {
+  return { line, character };
+}
+
+/**
  * A Utility function for creating `LSP.Range` object.
  */
 export function createRange(

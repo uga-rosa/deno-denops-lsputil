@@ -4,3 +4,4 @@ export * from "./line/mod.ts";
 export * from "./offset_encoding/mod.ts";
 export * from "./range/mod.ts";
 export * from "./text_edit/mod.ts";
+export * from "./util/mod.ts";

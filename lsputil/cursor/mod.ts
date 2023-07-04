@@ -2,16 +2,6 @@ import { Denops, fn, LSP } from "../deps.ts";
 import { toUtf16Index, toUtf8Index } from "../offset_encoding/mod.ts";
 
 /**
- * A Utility function for creating `LSP.Position` object.
- */
-export function createPosition(
-  line: number,
-  character: number,
-): LSP.Position {
-  return { line, character };
-}
-
-/**
  * Get the cursor position.
  * 0-based and columns are utf-16 offset.
  */
