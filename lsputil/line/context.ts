@@ -9,11 +9,11 @@ import { Denops, fn } from "../deps.ts";
  * import { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
  * import { LineContext } from "./context.ts"
  *
- * export async function main(denops: Denops) {
+ * export async function main(denops: Denops): Promise<void> {
  *   const ctx = await LineContext.create(denops);
- *   -- String before the cursor
+ *   // String before the cursor
  *   const beforeLine = ctx.text.slice(0, ctx.character);
- *   -- String after the cursor
+ *   // String after the cursor
  *   const afterLine = ctx.text.slice(ctx.character);
  * }
  * ```

@@ -16,11 +16,11 @@ import { setCursor } from "../cursor/mod.ts";
  * import { LineContext } from "./context.ts"
  * import { linePatch } from "./patch.ts"
  *
- * export async function main(denops: Denops) {
+ * export async function main(denops: Denops): Promise<void> {
  *   const ctx = await LineContext.create(denops);
- *   -- String before the cursor
+ *   // String before the cursor
  *   const beforeLine = ctx.text.slice(0, ctx.character);
- *   -- Replace string before the cursor with 'foo'
+ *   // Replace string before the cursor with 'foo'
  *   await linePatch(denops, beforeLine.length, 0, "foo");
  * }
  * ```
