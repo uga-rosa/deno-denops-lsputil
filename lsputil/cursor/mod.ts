@@ -1,7 +1,7 @@
 import { Denops, fn, LSP } from "../deps.ts";
 import { toUtf16Index, toUtf8Index } from "../offset_encoding/mod.ts";
 
-/*
+/**
  * Get the cursor position.
  * 0-based and columns are utf-16 offset.
  */
@@ -14,7 +14,7 @@ export async function getCursor(
   return { line: row - 1, character };
 }
 
-/*
+/**
  * Set the cursor to the position.
  * 0-based and columns are utf-16 offset.
  */

@@ -33,6 +33,9 @@ export function isPositionBefore(
     (a.line === b.line && a.character < b.character);
 }
 
+/**
+ * A Utility function for creating `LSP.Range` object.
+ */
 export function createRange(
   startLine: number,
   startCharacter: number,
