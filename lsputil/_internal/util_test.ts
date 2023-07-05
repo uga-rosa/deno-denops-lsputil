@@ -1,4 +1,4 @@
-import { assertEquals, fn, test } from "../deps.ts";
+import { assertEquals, test } from "../deps.ts";
 import { setup } from "./test_util.ts";
 import {
   bufLineCount,
@@ -6,7 +6,6 @@ import {
   createPosition,
   createRange,
   isPositionBefore,
-  normalizeBufnr,
 } from "./util.ts";
 
 Deno.test({
@@ -15,15 +14,6 @@ Deno.test({
     assertEquals(byteLength("abc"), 3);
     assertEquals(byteLength("あいう"), 9);
     assertEquals(byteLength("😀😀😀"), 12);
-  },
-});
-
-test({
-  mode: "all",
-  name: "normalizeBufnr()",
-  fn: async (denops) => {
-    const bufnr = await fn.bufnr(denops);
-    assertEquals(await normalizeBufnr(denops, 0), bufnr);
   },
 });
 
