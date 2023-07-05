@@ -1,4 +1,4 @@
-import { Denops, LSP } from "../deps.ts";
+import { Denops, fn, LSP } from "../deps.ts";
 
 const ENCODER = new TextEncoder();
 export function byteLength(
@@ -48,5 +48,6 @@ export async function bufLineCount(
   denops: Denops,
   bufnr: number,
 ): Promise<number> {
+  bufnr = bufnr === 0 ? await fn.bufnr(denops) : bufnr;
   return await denops.eval(`getbufinfo(${bufnr})[0].linecount`) as number;
 }
