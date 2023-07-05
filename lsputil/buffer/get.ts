@@ -1,6 +1,6 @@
 import { Denops, fn, LSP } from "../deps.ts";
 import { normalizeBufnr } from "../_internal/util.ts";
-import { LSPRangeError, verifyLineRange, verifyRange } from "../mod.ts";
+import { LSPRangeError, verifyLineRange, verifyRange } from "../range/mod.ts";
 
 /**
  * Gets a range from the buffer.
