@@ -1,6 +1,6 @@
 import { test } from "../deps.ts";
-import { createRange } from "../internal/util.ts";
-import { assertBuffer, setup } from "../internal/test_util.ts";
+import { createRange } from "../_internal/util.ts";
+import { assertBuffer, setup } from "../_internal/test_util.ts";
 import { setLines, setText } from "./set.ts";
 
 const origBuffer = [

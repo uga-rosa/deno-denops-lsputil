@@ -1,5 +1,5 @@
 import { Denops, fn, LSP } from "../deps.ts";
-import { bufLineCount, normalizeBufnr } from "../internal/util.ts";
+import { bufLineCount, normalizeBufnr } from "../_internal/util.ts";
 import {
   OffsetEncoding,
   toUtf16Index,
@@ -7,7 +7,7 @@ import {
   toUtf8Index,
 } from "../offset_encoding/mod.ts";
 
-export { createRange } from "../internal/util.ts";
+export { createRange } from "../_internal/util.ts";
 
 export class LSPRangeError extends Error {
   static {

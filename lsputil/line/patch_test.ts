@@ -1,6 +1,6 @@
 import { test } from "../deps.ts";
 import { linePatch } from "./patch.ts";
-import { assertBuffer, setup } from "../internal/test_util.ts";
+import { assertBuffer, setup } from "../_internal/test_util.ts";
 
 const origBuffer = [
   "あいう|えお",

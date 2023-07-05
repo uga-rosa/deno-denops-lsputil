@@ -1,5 +1,5 @@
 import { assertEquals, test } from "../deps.ts";
-import { assertBuffer, setup } from "../internal/test_util.ts";
+import { assertBuffer, setup } from "../_internal/test_util.ts";
 import { getCursor, setCursor } from "./mod.ts";
 
 test({

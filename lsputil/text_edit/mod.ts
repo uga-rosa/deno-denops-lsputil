@@ -5,7 +5,7 @@ import {
   byteLength,
   isPositionBefore,
   normalizeBufnr,
-} from "../internal/util.ts";
+} from "../_internal/util.ts";
 import { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Range } from "../range/mod.ts";
 import { getLine, setText } from "../buffer/mod.ts";

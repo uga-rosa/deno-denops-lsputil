@@ -1,6 +1,6 @@
 import { assertEquals, test } from "../deps.ts";
 import { LineContext } from "./context.ts";
-import { setup } from "../internal/test_util.ts";
+import { setup } from "../_internal/test_util.ts";
 
 const suites = {
   "single byte": {

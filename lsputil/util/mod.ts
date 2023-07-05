@@ -2,4 +2,4 @@ export {
   createPosition,
   createRange,
   isPositionBefore,
-} from "../internal/util.ts";
+} from "../_internal/util.ts";

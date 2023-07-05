@@ -1,5 +1,5 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
-import { isPositionBefore, normalizeBufnr } from "../internal/util.ts";
+import { isPositionBefore, normalizeBufnr } from "../_internal/util.ts";
 import { verifyLineRange } from "../mod.ts";
 import { toUtf8Index } from "../offset_encoding/mod.ts";
 import { LSPRangeError, verifyRange } from "../range/mod.ts";

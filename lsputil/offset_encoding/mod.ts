@@ -1,4 +1,4 @@
-import { byteLength } from "../internal/util.ts";
+import { byteLength } from "../_internal/util.ts";
 
 /**
  * A type indicating how positions are encoded,

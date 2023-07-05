@@ -1,5 +1,5 @@
 import { Denops, fn, LSP } from "../deps.ts";
-import { normalizeBufnr } from "../internal/util.ts";
+import { normalizeBufnr } from "../_internal/util.ts";
 import { LSPRangeError, verifyLineRange, verifyRange } from "../mod.ts";
 
 /**
