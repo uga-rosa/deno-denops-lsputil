@@ -10,7 +10,7 @@ import { toUtf16Range } from "../range/mod.ts";
 import { getLine, setText } from "../buffer/mod.ts";
 import { ensureBufnr } from "../assert/mod.ts";
 
-function normalizeRange(
+function fixReversedRange(
   range: LSP.Range,
 ): LSP.Range {
   const { start, end } = range;
@@ -34,10 +34,9 @@ export async function applyTextEdits(
 ) {
   bufnr = await ensureBufnr(denops, bufnr);
 
-  // Fix reversed range
   textEdits = textEdits.map((textEdit) => ({
     ...textEdit,
-    range: normalizeRange(textEdit.range),
+    range: fixReversedRange(textEdit.range),
   }));
   // Execute in reverse order.
   textEdits.sort((a, b) =>
