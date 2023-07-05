@@ -7,8 +7,6 @@ import {
   toUtf8Index,
 } from "../offset_encoding/mod.ts";
 
-export { createRange } from "../_internal/util.ts";
-
 export class LSPRangeError extends Error {
   static {
     this.prototype.name = "RangeError";
