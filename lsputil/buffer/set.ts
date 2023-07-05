@@ -1,8 +1,7 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
-import { isPositionBefore, normalizeBufnr } from "../_internal/util.ts";
-import { verifyLineRange } from "../range/mod.ts";
-import { toUtf8Index } from "../offset_encoding/mod.ts";
-import { LSPRangeError, verifyRange } from "../range/mod.ts";
+import { toUtf8Range } from "../range/mod.ts";
+import { assertRange, ensureBufnr, ensureLineRange } from "../assert/mod.ts";
+import { getLine } from "./get.ts";
 
 /**
  * Replaces a specific range within the buffer.
@@ -21,35 +20,27 @@ export async function setText(
   range: LSP.Range,
   replacement: string[],
 ): Promise<void> {
-  if (isPositionBefore(range.end, range.start)) {
-    throw new LSPRangeError(`'start' is higher than 'end'`);
-  }
-  bufnr = await normalizeBufnr(denops, bufnr);
-  /** 1-based */
-  const {
-    startRow,
-    endRow,
-    startLine,
-    endLine,
-  } = await verifyRange(denops, bufnr, range);
+  bufnr = await ensureBufnr(denops, bufnr);
+  await assertRange(denops, bufnr, range);
 
   if (denops.meta.host === "nvim") {
-    const startCol = toUtf8Index(startLine, range.start.character, "utf-16");
-    const endCol = toUtf8Index(endLine, range.end.character, "utf-16");
+    range = await toUtf8Range(denops, bufnr, range, "utf-16");
     // 0-based
     // Extmarks will be preserved on non-modified parts of the touched lines.
     await api.nvim_buf_set_text(
       denops,
       bufnr,
-      startRow - 1,
-      startCol,
-      endRow - 1,
-      endCol,
+      range.start.line,
+      range.start.character,
+      range.end.line,
+      range.end.character,
       replacement,
     );
   } else {
     // Store cursor position
     const cursor = await fn.getpos(denops, ".");
+    const startLine = await getLine(denops, bufnr, range.start.line);
+    const endLine = await getLine(denops, bufnr, range.end.line);
     if (replacement.length === 0) {
       replacement = [
         startLine.slice(0, range.start.character) +
@@ -62,8 +53,13 @@ export async function setText(
       replacement[replacement.length - 1] += endLine.slice(range.end.character);
     }
     // Deleting the lines first may create an extra blank line.
-    await fn.appendbufline(denops, bufnr, endRow, replacement);
-    await fn.deletebufline(denops, bufnr, startRow, endRow);
+    await fn.appendbufline(denops, bufnr, range.end.line + 1, replacement);
+    await fn.deletebufline(
+      denops,
+      bufnr,
+      range.start.line + 1,
+      range.end.line + 1,
+    );
     // Restore cursor position if bufnr points the current buffer.
     if (bufnr === await fn.bufnr(denops)) {
       await fn.setpos(denops, ".", cursor);
@@ -87,18 +83,26 @@ export async function setLines(
   end: number,
   replacement: string[],
 ) {
-  bufnr = await normalizeBufnr(denops, bufnr);
-  const { startRow, endRow } = await verifyLineRange(denops, bufnr, start, end);
+  bufnr = await ensureBufnr(denops, bufnr);
+  const {
+    start: startFixed,
+    end: endFixed,
+  } = await ensureLineRange(denops, bufnr, start, end);
+
+  if (denops.meta.host === "nvim") {
+    await api.nvim_buf_set_lines(denops, bufnr, start, end, true, replacement);
+    return;
+  }
 
   // Store cursor position
   const cursor = await fn.getpos(denops, ".");
   // Deleting the lines first may create an extra blank line.
-  await fn.appendbufline(denops, bufnr, endRow - 1, replacement);
-  await fn.deletebufline(denops, bufnr, startRow, endRow - 1);
+  await fn.appendbufline(denops, bufnr, endFixed, replacement);
+  await fn.deletebufline(denops, bufnr, startFixed + 1, endFixed);
   // Restore cursor position if bufnr points the current buffer.
   if (bufnr === await fn.bufnr(denops)) {
-    if (cursor[1] >= endRow) {
-      cursor[1] += replacement.length - (endRow - startRow);
+    if (cursor[1] > endFixed) {
+      cursor[1] += replacement.length - (endFixed - startFixed);
     }
     await fn.setpos(denops, ".", cursor);
   }

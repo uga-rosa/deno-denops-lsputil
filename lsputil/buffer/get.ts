@@ -1,6 +1,10 @@
 import { Denops, fn, LSP } from "../deps.ts";
-import { normalizeBufnr } from "../_internal/util.ts";
-import { LSPRangeError, verifyLineRange, verifyRange } from "../range/mod.ts";
+import {
+  assertPosition,
+  assertRange,
+  ensureBufnr,
+  ensureLineRange,
+} from "../assert/mod.ts";
 
 /**
  * Gets a range from the buffer.
@@ -14,10 +18,15 @@ export async function getText(
   bufnr: number,
   range: LSP.Range,
 ): Promise<string[]> {
-  bufnr = await normalizeBufnr(denops, bufnr);
-  const { startRow, endRow } = await verifyRange(denops, bufnr, range);
+  bufnr = await ensureBufnr(denops, bufnr);
+  await assertRange(denops, bufnr, range);
 
-  const lines = await fn.getbufline(denops, bufnr, startRow, endRow);
+  const lines = await fn.getbufline(
+    denops,
+    bufnr,
+    range.start.line + 1,
+    range.end.line + 1,
+  );
   // Process from the end, taking into account the case of only one line.
   lines[lines.length - 1] = lines[lines.length - 1].slice(
     0,
@@ -42,12 +51,15 @@ export async function getLines(
   start: number,
   end: number,
 ): Promise<string[]> {
-  bufnr = await normalizeBufnr(denops, bufnr);
-  const { startRow, endRow } = await verifyLineRange(denops, bufnr, start, end);
-  if (startRow === endRow) {
+  bufnr = await ensureBufnr(denops, bufnr);
+  const {
+    start: startFixed,
+    end: endFixed,
+  } = await ensureLineRange(denops, bufnr, start, end);
+  if (startFixed === endFixed) {
     return [];
   }
-  return await fn.getbufline(denops, bufnr, startRow, endRow - 1);
+  return await fn.getbufline(denops, bufnr, startFixed + 1, endFixed);
 }
 
 /**
@@ -62,10 +74,7 @@ export async function getLine(
   bufnr: number,
   line: number,
 ): Promise<string> {
-  bufnr = await normalizeBufnr(denops, bufnr);
-  const lines = await fn.getbufline(denops, bufnr, line + 1);
-  if (lines.length === 0) {
-    throw new LSPRangeError("line");
-  }
-  return lines[0];
+  bufnr = await ensureBufnr(denops, bufnr);
+  await assertPosition(denops, bufnr, { line, character: 0 });
+  return (await fn.getbufline(denops, bufnr, line + 1))[0];
 }

@@ -4,11 +4,11 @@ import {
   bufLineCount,
   byteLength,
   isPositionBefore,
-  normalizeBufnr,
 } from "../_internal/util.ts";
 import { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Range } from "../range/mod.ts";
 import { getLine, setText } from "../buffer/mod.ts";
+import { ensureBufnr } from "../assert/mod.ts";
 
 function normalizeRange(
   range: LSP.Range,
@@ -32,7 +32,7 @@ export async function applyTextEdits(
   textEdits: LSP.TextEdit[],
   offsetEncoding: OffsetEncoding = "utf-16",
 ) {
-  bufnr = await normalizeBufnr(denops, bufnr);
+  bufnr = await ensureBufnr(denops, bufnr);
 
   // Fix reversed range
   textEdits = textEdits.map((textEdit) => ({
