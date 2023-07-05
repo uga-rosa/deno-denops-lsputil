@@ -121,14 +121,13 @@ export async function ensureLineRange(
   end: number;
 }> {
   const lineCount = await bufLineCount(denops, bufnr);
-  start = start >= 0 ? start : lineCount + start;
-  end = end >= 0 ? end : lineCount + end;
+  start = start >= 0 ? start : lineCount + 1 + start;
+  end = end >= 0 ? end : lineCount + 1 + end;
 
-  if (start < 0 || start > lineCount - 1) {
+  if (start < 0 || start > lineCount) {
     throw new LSPRangeError("Out of range: start");
   }
   if (end < 0 || end > lineCount) {
-    // end-exclusive
     throw new LSPRangeError("Out of range: end");
   }
   if (start > end) {
