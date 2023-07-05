@@ -10,5 +10,5 @@ export * as LSP from "npm:vscode-languageserver-types@3.17.3";
 export {
   assertEquals,
   assertRejects,
-} from "https://deno.land/std@0.192.0/testing/asserts.ts";
+} from "https://deno.land/std@0.193.0/testing/asserts.ts";
 export { test } from "https://deno.land/x/denops_test@v1.4.0/mod.ts";
