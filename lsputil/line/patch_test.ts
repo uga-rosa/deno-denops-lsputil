@@ -39,8 +39,9 @@ const suites = {
   },
 };
 
+// In vim mode, fn.mode() always return 'c'.
 test({
-  mode: "all",
+  mode: "nvim",
   name: "linePatch()",
   fn: async (denops, t) => {
     for (const [mode, suite] of Object.entries(suites)) {

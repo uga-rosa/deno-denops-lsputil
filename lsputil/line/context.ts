@@ -21,23 +21,36 @@ import { Denops, fn } from "../deps.ts";
 export class LineContext {
   character: number;
   text: string;
+  mode: string;
 
   constructor(
     character: number,
     text: string,
+    mode?: string,
   ) {
     this.character = character;
     this.text = text;
+    this.mode = mode ?? "i";
   }
 
   static async create(
     denops: Denops,
   ): Promise<LineContext> {
-    const beforeLine = await denops.eval(
-      `getline('.')[:col('.')-2]`,
-    ) as string;
-    const character = beforeLine.length;
-    const text = await fn.getline(denops, ".");
-    return new LineContext(character, text);
+    const mode = await fn.mode(denops);
+    if (mode === "c") {
+      const beforeLine = await denops.eval(
+        `getcmdline()[:getcmdpos()-2]`,
+      ) as string;
+      const character = beforeLine.length;
+      const text = await fn.getcmdline(denops);
+      return new LineContext(character, text, mode);
+    } else {
+      const beforeLine = await denops.eval(
+        `getline('.')[:col('.')-2]`,
+      ) as string;
+      const character = beforeLine.length;
+      const text = await fn.getline(denops, ".");
+      return new LineContext(character, text, mode);
+    }
   }
 }
