@@ -6,6 +6,7 @@ import { setCursor } from "../cursor/mod.ts";
 
 /**
  * Replace the range of `before` and `after` the cursor with `text`.
+ * If in cmdline mode, edit cmdline. Otherwise, edit the buffer.
  *
  * 0-based and columns are utf-16 offset.
  *

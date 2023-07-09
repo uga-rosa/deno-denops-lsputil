@@ -2,6 +2,7 @@ import { Denops, fn } from "../deps.ts";
 
 /**
  * Context of the line where the cursor is.
+ * If in cmdline mode, it is obtained from the command line.
  *
  * 0-based and columns are utf-16 offset.
  *
