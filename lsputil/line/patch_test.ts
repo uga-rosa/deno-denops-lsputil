@@ -37,6 +37,17 @@ const suites = {
       "かきくけ|お",
     ],
   },
+  linebreak: {
+    patch: {
+      before: 2,
+      after: 1,
+      text: "かき\nくけ",
+    },
+    expectedBuffer: [
+      "あかき",
+      "くけ|お",
+    ],
+  },
 };
 
 // In vim mode, fn.mode() always return 'c'.

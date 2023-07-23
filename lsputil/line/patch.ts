@@ -10,7 +10,7 @@ import { setCursor } from "../cursor/mod.ts";
  *
  * 0-based and columns are utf-16 offset.
  *
- * NOTE: Do not include line breaks in `text`.
+ * NOTE: In cmdline mode, do not include line breaks in `text`.
  *
  * ```typescript
  * import { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
@@ -47,10 +47,18 @@ export async function linePatch(
       line,
       ctx.character + after,
     );
-    await setText(denops, 0, range, [text]);
-    await setCursor(denops, {
-      line,
-      character: range.start.character + text.length,
-    });
+    const insertLines = text.split("\n");
+    await setText(denops, 0, range, insertLines);
+    if (insertLines.length == 1) {
+      await setCursor(denops, {
+        line,
+        character: range.start.character + text.length,
+      });
+    } else {
+      await setCursor(denops, {
+        line: line + insertLines.length - 1,
+        character: insertLines[insertLines.length - 1].length,
+      });
+    }
   }
 }
