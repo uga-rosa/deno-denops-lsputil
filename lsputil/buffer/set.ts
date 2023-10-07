@@ -1,5 +1,4 @@
 import { api, Denops, fn, LSP } from "../deps.ts";
-import { toUtf8Range } from "../range/mod.ts";
 import { assertRange, ensureBufnr, ensureLineRange } from "../assert/mod.ts";
 import { getLine } from "./get.ts";
 
@@ -23,47 +22,32 @@ export async function setText(
   bufnr = await ensureBufnr(denops, bufnr);
   await assertRange(denops, bufnr, range);
 
-  if (denops.meta.host === "nvim") {
-    range = await toUtf8Range(denops, bufnr, range, "utf-16");
-    // 0-based
-    // Extmarks will be preserved on non-modified parts of the touched lines.
-    await api.nvim_buf_set_text(
-      denops,
-      bufnr,
-      range.start.line,
-      range.start.character,
-      range.end.line,
-      range.end.character,
-      replacement,
-    );
+  // Store cursor position
+  const cursor = await fn.getpos(denops, ".");
+  const startLine = await getLine(denops, bufnr, range.start.line);
+  const endLine = await getLine(denops, bufnr, range.end.line);
+  if (replacement.length === 0) {
+    replacement = [
+      startLine.slice(0, range.start.character) +
+      endLine.slice(range.end.character),
+    ];
   } else {
-    // Store cursor position
-    const cursor = await fn.getpos(denops, ".");
-    const startLine = await getLine(denops, bufnr, range.start.line);
-    const endLine = await getLine(denops, bufnr, range.end.line);
-    if (replacement.length === 0) {
-      replacement = [
-        startLine.slice(0, range.start.character) +
-        endLine.slice(range.end.character),
-      ];
-    } else {
-      replacement = [...replacement];
-      replacement[0] = startLine.slice(0, range.start.character) +
-        replacement[0];
-      replacement[replacement.length - 1] += endLine.slice(range.end.character);
-    }
-    // Deleting the lines first may create an extra blank line.
-    await fn.appendbufline(denops, bufnr, range.end.line + 1, replacement);
-    await fn.deletebufline(
-      denops,
-      bufnr,
-      range.start.line + 1,
-      range.end.line + 1,
-    );
-    // Restore cursor position if bufnr points the current buffer.
-    if (bufnr === await fn.bufnr(denops)) {
-      await fn.setpos(denops, ".", cursor);
-    }
+    replacement = [...replacement];
+    replacement[0] = startLine.slice(0, range.start.character) +
+      replacement[0];
+    replacement[replacement.length - 1] += endLine.slice(range.end.character);
+  }
+  // Deleting the lines first may create an extra blank line.
+  await fn.appendbufline(denops, bufnr, range.end.line + 1, replacement);
+  await fn.deletebufline(
+    denops,
+    bufnr,
+    range.start.line + 1,
+    range.end.line + 1,
+  );
+  // Restore cursor position if bufnr points the current buffer.
+  if (bufnr === await fn.bufnr(denops)) {
+    await fn.setpos(denops, ".", cursor);
   }
 }
 
