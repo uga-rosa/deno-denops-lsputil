@@ -6,4 +6,4 @@ export * from "./position/mod.ts";
 export * from "./range/mod.ts";
 export * from "./text_edit/mod.ts";
 export * from "./util/mod.ts";
-export * from "./lsp/mod.ts"
+export * from "./lsp/mod.ts";
