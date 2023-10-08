@@ -1,4 +1,4 @@
-import { Denops, fn, isAbsolute, LSP, toFileUrl } from "../deps.ts";
+import { Denops, fn, LSP } from "../deps.ts";
 import { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Position, toUtf32Position } from "../position/mod.ts";
 
@@ -11,13 +11,14 @@ export type TextDocumentPositionParams = {
 
 export async function makeTextDocumentIdentifier(
   denops: Denops,
-  bufNr: number,
+  bufNr?: number,
 ): Promise<LSP.TextDocumentIdentifier> {
-  const filepath = await denops.eval(
-    `fnamemodify(bufname(${bufNr}), ':p')`,
-  ) as string;
+  if (bufNr === 0 || bufNr === undefined) {
+    bufNr = await fn.bufnr(denops);
+  }
+  const filepath = await denops.eval(`fnamemodify(bufname(${bufNr}), ":p")`);
   return {
-    uri: isAbsolute(filepath) ? toFileUrl(filepath).href : filepath,
+    uri: `file://${filepath}`,
   };
 }
 
