@@ -15,9 +15,15 @@ export type FormatModifier =
   | "camelcase"
   | "pascalcase";
 
-export abstract class Node {
-  abstract type: NodeType;
-}
+export type Node =
+  | Snippet
+  | Tabstop
+  | Placeholder
+  | Choice
+  | Variable
+  | Transform
+  | Format
+  | Text;
 
 export function isSnippet(n: Node): n is Snippet {
   return n.type === "snippet";
@@ -51,7 +57,7 @@ export function isText(n: Node): n is Text {
   return n.type === "text";
 }
 
-export class Snippet extends Node {
+export class Snippet {
   type: "snippet" = "snippet";
 
   constructor(
@@ -62,89 +68,77 @@ export class Snippet extends Node {
       | Variable
       | Text
     )[],
-  ) {
-    super();
-  }
+  ) {}
 
   getText(): string {
     return this.children.map((n) => n.getText()).join("");
   }
 }
 
-export class Tabstop extends Node {
+export class Tabstop {
   type: "tabstop" = "tabstop";
 
   constructor(
     public tabstop: number,
     public transform?: Transform,
-  ) {
-    super();
-  }
+  ) {}
 
   getText(): string {
     return "";
   }
 }
 
-export class Placeholder extends Node {
+export class Placeholder {
   type: "placeholder" = "placeholder";
 
   constructor(
     public tabstop: number,
     public children?: Snippet["children"],
-  ) {
-    super();
-  }
+  ) {}
 
   getText(): string {
     return this.children?.map((n) => n.getText()).join("") ?? "";
   }
 }
 
-export class Choice extends Node {
+export class Choice {
   type: "choice" = "choice";
 
   constructor(
     public tabstop: number,
     public items: string[],
-  ) {
-    super();
-  }
+  ) {}
 
   getText(): string {
     return this.items[0];
   }
 }
 
-export class Variable extends Node {
+export class Variable {
   type: "variable" = "variable";
 
   constructor(
     public name: string,
     public transform?: Transform,
     public children?: Snippet["children"],
-  ) {
-    super();
-  }
+  ) {}
 
   getText(): string {
     return "";
   }
 }
 
-export class Transform extends Node {
+export class Transform {
   type: "transform" = "transform";
 
   constructor(
     public pattern: string,
     public formats: (Format | Text)[],
     public options?: string,
-  ) {
-    super();
-  }
+  ) {}
 }
 
-export class Format extends Node {
+export class Format {
   type: "format" = "format";
 
   constructor(
@@ -152,19 +146,15 @@ export class Format extends Node {
     public modifier?: FormatModifier,
     public ifText?: string,
     public elseText?: string,
-  ) {
-    super();
-  }
+  ) {}
 }
 
-export class Text extends Node {
+export class Text {
   type: "text" = "text";
 
   constructor(
     public text: string,
-  ) {
-    super();
-  }
+  ) {}
 
   getText(): string {
     return this.text;
