@@ -93,7 +93,7 @@ export class Placeholder {
 
   constructor(
     public tabstop: number,
-    public children?: Snippet["children"],
+    public children: Snippet["children"],
   ) {}
 
   getText(): string {
