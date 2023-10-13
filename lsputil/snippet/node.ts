@@ -25,38 +25,6 @@ export type Node =
   | Format
   | Text;
 
-export function isSnippet(n: Node): n is Snippet {
-  return n.type === "snippet";
-}
-
-export function isTabstop(n: Node): n is Tabstop {
-  return n.type === "tabstop";
-}
-
-export function isPlaceholder(n: Node): n is Placeholder {
-  return n.type === "placeholder";
-}
-
-export function isChoice(n: Node): n is Choice {
-  return n.type === "choice";
-}
-
-export function isVariable(n: Node): n is Variable {
-  return n.type === "variable";
-}
-
-export function isTransform(n: Node): n is Transform {
-  return n.type === "transform";
-}
-
-export function isFormat(n: Node): n is Format {
-  return n.type === "format";
-}
-
-export function isText(n: Node): n is Text {
-  return n.type === "text";
-}
-
 export class Snippet {
   type: "snippet" = "snippet";
 
