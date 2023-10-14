@@ -18,9 +18,11 @@ export async function setText(
   bufnr: number,
   range: LSP.Range,
   replacement: string[],
+  options?: { undojoin: boolean },
 ): Promise<void> {
   bufnr = await ensureBufnr(denops, bufnr);
   await assertRange(denops, bufnr, range);
+  options = { undojoin: options?.undojoin ?? false };
 
   // Store cursor position
   const cursor = await fn.getpos(denops, ".");
@@ -38,13 +40,19 @@ export async function setText(
     replacement[replacement.length - 1] += endLine.slice(range.end.character);
   }
   // Deleting the lines first may create an extra blank line.
-  await fn.appendbufline(denops, bufnr, range.end.line + 1, replacement);
-  await fn.deletebufline(
-    denops,
+  if (options.undojoin) {
+    await denops.cmd(
+      `undojoin | call appendbufline(bufnr, lnum, replacement)`,
+      { bufnr, lnum: range.end.line + 1, replacement },
+    );
+  } else {
+    fn.appendbufline(denops, bufnr, range.end.line + 1, replacement);
+  }
+  await denops.cmd(`undojoin | call deletebufline(bufnr, start, end)`, {
     bufnr,
-    range.start.line + 1,
-    range.end.line + 1,
-  );
+    start: range.start.line + 1,
+    end: range.end.line + 1,
+  });
   // Restore cursor position if bufnr points the current buffer.
   if (bufnr === await fn.bufnr(denops)) {
     await fn.setpos(denops, ".", cursor);

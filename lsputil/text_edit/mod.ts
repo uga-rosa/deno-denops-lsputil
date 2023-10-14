@@ -53,6 +53,7 @@ export async function applyTextEdits(
     : { line: -1, character: -1 };
   let isCursorFixed = false;
 
+  let isFirstCall = true;
   for (const textEdit of textEdits) {
     const newText = textEdit.newText.replace(/\r\n?/g, "\n");
     const replacement = newText.split("\n");
@@ -65,7 +66,14 @@ export async function applyTextEdits(
     const lineCount = await bufLineCount(denops, bufnr);
     if (range.start.line >= lineCount) {
       // Append lines to the end
-      await fn.appendbufline(denops, bufnr, "$", replacement);
+      if (isFirstCall) {
+        await fn.appendbufline(denops, bufnr, "$", replacement);
+      } else {
+        await denops.cmd(
+          `undojoin | call appendbufline(bufnr, "$", replacement)`,
+          { bufnr, replacement },
+        );
+      }
     } else {
       const endLine = await getLine(
         denops,
@@ -87,7 +95,9 @@ export async function applyTextEdits(
           replacement.pop();
         }
       }
-      await setText(denops, bufnr, range, replacement);
+      await setText(denops, bufnr, range, replacement, {
+        undojoin: !isFirstCall,
+      });
 
       // If range.end is before or at the same position as the cursor,
       // fix the cursor position.
@@ -103,6 +113,9 @@ export async function applyTextEdits(
           (range.end.line - range.start.line + 1);
         isCursorFixed = true;
       }
+    }
+    if (isFirstCall) {
+      isFirstCall = false;
     }
   }
 
