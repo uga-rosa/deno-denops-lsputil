@@ -33,7 +33,13 @@ jobs:
         run: deno task check
 
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner:
+          - ubuntu-latest
+          - windows-latest
+          - mac-latest
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v3
         with:
