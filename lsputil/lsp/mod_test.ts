@@ -13,10 +13,16 @@ test({
       "zxcvbnm,./",
     ], true);
     const params = await makePositionParams(denops);
-    const uri = "file:///foo";
-    assertEquals(params, {
-      textDocument: { uri },
-      position: { line: 1, character: 4 },
-    });
+    if (Deno.build.os === "windows") {
+      assertEquals(params, {
+        textDocument: { uri: "file://D:\\foo" },
+        position: { line: 1, character: 4 },
+      });
+    } else {
+      assertEquals(params, {
+        textDocument: { uri: "file:///foo" },
+        position: { line: 1, character: 4 },
+      });
+    }
   },
 });
