@@ -8,3 +8,4 @@ export * from "./text_edit/mod.ts";
 export * from "./util/mod.ts";
 export * from "./lsp/mod.ts";
 export * from "./snippet/mod.ts";
+export * from "./uri/mod.ts";
