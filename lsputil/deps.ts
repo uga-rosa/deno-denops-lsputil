@@ -10,8 +10,6 @@ export * as LSP from "npm:vscode-languageserver-types@3.17.5";
 export {
   dirname,
   fromFileUrl,
-  isAbsolute,
-  relative,
   toFileUrl,
 } from "https://deno.land/std@0.204.0/path/mod.ts";
 export { existsSync } from "https://deno.land/std@0.204.0/fs/mod.ts";
@@ -20,5 +18,5 @@ export { existsSync } from "https://deno.land/std@0.204.0/fs/mod.ts";
 export {
   assertEquals,
   assertRejects,
-} from "https://deno.land/std@0.204.0/testing/asserts.ts";
+} from "https://deno.land/std@0.204.0/assert/mod.ts";
 export { test } from "https://deno.land/x/denops_test@v1.4.0/mod.ts";

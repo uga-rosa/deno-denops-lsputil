@@ -9,3 +9,4 @@ export * from "./util/mod.ts";
 export * from "./lsp/mod.ts";
 export * from "./snippet/mod.ts";
 export * from "./uri/mod.ts";
+export * from "./workspace_edit/mod.ts";
