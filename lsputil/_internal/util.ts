@@ -10,11 +10,16 @@ export function byteLength(
 /**
  * Returns true if position 'a' is before position as 'b'.
  * If 'a' and 'b' are in same position, return false.
+ * If allowSame is set to true, return true even if 'a' and 'b' are in same position.
  */
 export function isPositionBefore(
   a: LSP.Position,
   b: LSP.Position,
+  allowSame?: boolean,
 ): boolean {
+  if (allowSame && a.line === b.line && a.character === b.character) {
+    return true;
+  }
   return a.line < b.line ||
     (a.line === b.line && a.character < b.character);
 }

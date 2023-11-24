@@ -50,6 +50,19 @@ Deno.test({
         );
       },
     });
+    await t.step({
+      name: "allowSame",
+      fn: () => {
+        assertEquals(
+          isPositionBefore(createPosition(1, 1), createPosition(1, 1)),
+          false,
+        );
+        assertEquals(
+          isPositionBefore(createPosition(1, 1), createPosition(1, 1), true),
+          true,
+        );
+      },
+    });
   },
 });
 

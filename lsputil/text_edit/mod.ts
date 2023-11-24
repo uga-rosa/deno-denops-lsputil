@@ -101,7 +101,7 @@ export async function applyTextEdits(
 
       // If range.end is before or at the same position as the cursor,
       // fix the cursor position.
-      if (!isPositionBefore(cursor, range.end)) {
+      if (isPositionBefore(range.end, cursor, true)) {
         if (range.end.line === cursor.line) {
           cursor.character += -range.end.character +
             replacement[replacement.length - 1].length;
