@@ -16,7 +16,11 @@ export async function uriFromBufnr(
   const fname = await denops.eval(
     `fnamemodify(bufname(${bufnr}), ':p')`,
   ) as string;
-  return uriFromFname(fname);
+  try {
+    return uriFromFname(fname);
+  } catch {
+    return fname;
+  }
 }
 
 /** Gets a filename from a URI. */
