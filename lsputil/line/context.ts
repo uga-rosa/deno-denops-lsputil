@@ -1,5 +1,23 @@
 import { Denops, fn } from "../deps.ts";
 
+function clamp(x: number, min: number, max: number): number {
+  return Math.min(Math.max(x, min), max);
+}
+
+const Encoder = new TextEncoder();
+const Decoder = new TextDecoder("utf-8", { fatal: true });
+function byteSlice(text: string, start: number, end: number): string {
+  const encoded = Encoder.encode(text);
+  start = clamp(start, 0, encoded.length);
+  end = clamp(end, start, encoded.length);
+  const sliced = encoded.slice(start, end);
+  try {
+    return Decoder.decode(sliced);
+  } catch {
+    return "";
+  }
+}
+
 /**
  * Context of the line where the cursor is.
  * If in cmdline mode, it is obtained from the command line.
@@ -38,20 +56,14 @@ export class LineContext {
     denops: Denops,
   ): Promise<LineContext> {
     const mode = await fn.mode(denops);
-    if (mode === "c") {
-      const beforeLine = await denops.eval(
-        `getcmdline()[:getcmdpos()-2]`,
-      ) as string;
-      const character = beforeLine.length;
-      const text = await fn.getcmdline(denops);
-      return new LineContext(character, text, mode);
-    } else {
-      const beforeLine = await denops.eval(
-        `getline('.')[:col('.')-2]`,
-      ) as string;
-      const character = beforeLine.length;
-      const text = await fn.getline(denops, ".");
-      return new LineContext(character, text, mode);
-    }
+    const text = mode === "c"
+      ? await fn.getcmdline(denops)
+      : await fn.getline(denops, ".");
+    const pos = mode === "c"
+      ? await fn.getcmdpos(denops)
+      : await fn.col(denops, ".");
+    const beforeLine = byteSlice(text, 0, pos - 1);
+    const character = beforeLine.length;
+    return new LineContext(character, text, mode);
   }
 }

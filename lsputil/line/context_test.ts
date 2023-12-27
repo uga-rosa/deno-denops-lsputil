@@ -22,6 +22,13 @@ test({
           character: 4,
         },
       },
+      "The head of the line": {
+        buffer: ["|foo"],
+        expected: {
+          text: "foo",
+          character: 0,
+        },
+      },
     };
 
     for (const [name, suite] of Object.entries(suites)) {
