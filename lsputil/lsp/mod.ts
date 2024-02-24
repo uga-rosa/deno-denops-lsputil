@@ -1,4 +1,4 @@
-import { Denops, fn, LSP } from "../deps.ts";
+import { Denops, fn, LSP, toFileUrl } from "../deps.ts";
 import { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Position, toUtf32Position } from "../position/mod.ts";
 
@@ -18,7 +18,7 @@ export async function makeTextDocumentIdentifier(
   }
   const filepath = await denops.eval(`fnamemodify(bufname(${bufNr}), ":p")`);
   return {
-    uri: `file://${filepath}`,
+    uri: toFileUrl(filepath).href,
   };
 }
 
