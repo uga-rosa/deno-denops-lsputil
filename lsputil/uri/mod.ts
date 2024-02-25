@@ -4,7 +4,11 @@ import { Denops, fn, fromFileUrl, toFileUrl } from "../deps.ts";
 export function uriFromFname(
   fname: string,
 ): string {
-  return toFileUrl(fname).toString();
+  try {
+    return toFileUrl(fname).toString();
+  } catch {
+    return fname;
+  }
 }
 
 /** Gets a URI from a bufnr. */
@@ -27,7 +31,11 @@ export async function uriFromBufnr(
 export function uriToFname(
   uri: string,
 ): string {
-  return fromFileUrl(uri);
+  try {
+    return fromFileUrl(uri);
+  } catch {
+    return uri;
+  }
 }
 
 /**
