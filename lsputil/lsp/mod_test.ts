@@ -15,7 +15,7 @@ test({
     const params = await makePositionParams(denops);
     if (Deno.build.os === "windows") {
       assertEquals(params, {
-        textDocument: { uri: "file://D:\\foo" },
+        textDocument: { uri: "file:///D:/foo" },
         position: { line: 1, character: 4 },
       });
     } else {
