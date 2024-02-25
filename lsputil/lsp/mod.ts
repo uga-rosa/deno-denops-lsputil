@@ -1,6 +1,7 @@
 import { Denops, fn, LSP } from "../deps.ts";
 import { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Position, toUtf32Position } from "../position/mod.ts";
+import { uriFromBufnr } from "../uri/mod.ts";
 
 export type TextDocumentPositionParams = {
   /** The text document. */
@@ -16,9 +17,8 @@ export async function makeTextDocumentIdentifier(
   if (bufNr === 0 || bufNr === undefined) {
     bufNr = await fn.bufnr(denops);
   }
-  const filepath = await denops.eval(`fnamemodify(bufname(${bufNr}), ":p")`);
   return {
-    uri: `file://${filepath}`,
+    uri: await uriFromBufnr(denops, bufNr),
   };
 }
 
