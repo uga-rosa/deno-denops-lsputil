@@ -1,4 +1,7 @@
 {
+  "name": "@uga-rosa/denops-lsputil",
+  "version": "0.9.4",
+  "exports": "./lsputil/mod.ts",
   "lock": false,
   "tasks": {
     "pre-commit": "deno task fmt && deno task check && deno task test",
