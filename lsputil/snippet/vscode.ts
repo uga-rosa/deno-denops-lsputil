@@ -27,7 +27,7 @@ const Var = G.pattern("[_a-zA-Z][_a-zA-Z0-9]*");
 const Int = G.map(G.pattern("[0-9]+"), (value) => Number(value));
 const NonZeroInt = G.map(G.pattern("[1-9][0-9]*"), (value) => Number(value));
 
-const Text = (targets: string[], specials: string[]) =>
+const Text = (targets: string[], specials: string[]): G.Parser<N.Text> =>
   G.map(
     G.takeUntil(targets, specials),
     (value) => new N.Text(value.esc),
@@ -245,7 +245,7 @@ const Variable = G.or(
   ),
 );
 
-export const Snippet = G.map(
+export const Snippet: G.Parser<N.Snippet> = G.map(
   G.many(G.or(anyWithoutText, Text(["$"], ["}", "\\"]))),
   (values) => new N.Snippet(values),
 );
