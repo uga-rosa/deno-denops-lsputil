@@ -1,5 +1,5 @@
-import { Denops, dirname, existsSync, fn, LSP } from "../deps.ts";
-import { OffsetEncoding } from "../offset_encoding/mod.ts";
+import { type Denops, dirname, existsSync, fn, type LSP } from "../deps.ts";
+import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { applyTextEdits } from "../text_edit/mod.ts";
 import { uriToBufnr, uriToFname } from "../uri/mod.ts";
 import {

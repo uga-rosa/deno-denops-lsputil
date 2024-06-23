@@ -1,4 +1,4 @@
-import { Denops, fn } from "../deps.ts";
+import { type Denops, fn } from "../deps.ts";
 
 function clamp(x: number, min: number, max: number): number {
   return Math.min(Math.max(x, min), max);

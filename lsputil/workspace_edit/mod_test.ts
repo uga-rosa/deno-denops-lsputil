@@ -1,5 +1,5 @@
 import { applyWorkspaceEdit } from "./mod.ts";
-import { assertEquals, fn, LSP, test } from "../deps.ts";
+import { assertEquals, fn, type LSP, test } from "../deps.ts";
 import { createRange } from "../_internal/util.ts";
 
 const OS = Deno.build.os === "windows" ? "windows" : "linux";

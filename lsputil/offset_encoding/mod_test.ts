@@ -1,6 +1,6 @@
 import { assertEquals } from "../deps.ts";
 import {
-  OffsetEncoding,
+  type OffsetEncoding,
   toUtf16Index,
   toUtf32Index,
   toUtf8Index,

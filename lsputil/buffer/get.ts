@@ -1,4 +1,4 @@
-import { Denops, fn, LSP } from "../deps.ts";
+import { type Denops, fn, type LSP } from "../deps.ts";
 import {
   assertPosition,
   assertRange,

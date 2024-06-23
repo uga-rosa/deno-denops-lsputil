@@ -1,4 +1,4 @@
-import { Denops, fn } from "../deps.ts";
+import { type Denops, fn } from "../deps.ts";
 import { LineContext } from "./context.ts";
 import { byteLength, createRange } from "../_internal/util.ts";
 import { setText } from "../buffer/mod.ts";

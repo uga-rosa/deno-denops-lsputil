@@ -1,4 +1,4 @@
-import { assertEquals, Denops, fn } from "../deps.ts";
+import { assertEquals, type Denops, fn } from "../deps.ts";
 import { byteLength } from "./util.ts";
 
 /** utf-8 offset, 1-based */

@@ -1,4 +1,4 @@
-import { Denops, fn, LSP, op } from "../deps.ts";
+import { type Denops, fn, type LSP, op } from "../deps.ts";
 import { bufLineCount } from "../_internal/util.ts";
 import { toUtf16Position, toUtf8Position } from "../position/mod.ts";
 

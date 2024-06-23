@@ -1,7 +1,7 @@
-import { assertEquals, Denops, LSP, test } from "../deps.ts";
+import { assertEquals, type Denops, type LSP, test } from "../deps.ts";
 import { createRange } from "../_internal/util.ts";
 import { setup } from "../_internal/test_util.ts";
-import { OffsetEncoding } from "../offset_encoding/mod.ts";
+import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Range, toUtf32Range, toUtf8Range } from "./mod.ts";
 
 const origBuffer = [

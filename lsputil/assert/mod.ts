@@ -1,4 +1,4 @@
-import { Denops, fn, LSP, op } from "../deps.ts";
+import { type Denops, fn, type LSP, op } from "../deps.ts";
 import { bufLineCount, isPositionBefore } from "../_internal/util.ts";
 
 export class InvalidBufferError extends Error {

@@ -1,4 +1,4 @@
-import { assertEquals, Fn, fn, test } from "../deps.ts";
+import { assertEquals, type Fn, fn, test } from "../deps.ts";
 import { applyTextEdits } from "./mod.ts";
 import { createRange } from "../_internal/util.ts";
 import { assertBuffer, setup } from "../_internal/test_util.ts";

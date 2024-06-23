@@ -1,5 +1,5 @@
-import { Denops, fn, LSP } from "../deps.ts";
-import { OffsetEncoding } from "../offset_encoding/mod.ts";
+import { type Denops, fn, type LSP } from "../deps.ts";
+import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Position, toUtf32Position } from "../position/mod.ts";
 import { uriFromBufnr } from "../uri/mod.ts";
 

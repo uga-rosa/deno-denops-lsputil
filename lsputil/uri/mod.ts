@@ -1,4 +1,4 @@
-import { Denops, fn, fromFileUrl, toFileUrl } from "../deps.ts";
+import { type Denops, fn, fromFileUrl, toFileUrl } from "../deps.ts";
 
 /** Gets a URI from a file path. */
 export function uriFromFname(

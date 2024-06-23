@@ -1,11 +1,11 @@
 import { getCursor, setCursor } from "../cursor/mod.ts";
-import { Denops, fn, LSP, op } from "../deps.ts";
+import { type Denops, fn, type LSP, op } from "../deps.ts";
 import {
   bufLineCount,
   byteLength,
   isPositionBefore,
 } from "../_internal/util.ts";
-import { OffsetEncoding } from "../offset_encoding/mod.ts";
+import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Range } from "../range/mod.ts";
 import { getLine, setText } from "../buffer/mod.ts";
 import { ensureBufnr } from "../assert/mod.ts";

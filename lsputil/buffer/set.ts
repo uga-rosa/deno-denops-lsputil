@@ -1,4 +1,4 @@
-import { api, Denops, fn, LSP } from "../deps.ts";
+import { api, type Denops, fn, type LSP } from "../deps.ts";
 import { assertRange, ensureBufnr, ensureLineRange } from "../assert/mod.ts";
 import { getLine } from "./get.ts";
 

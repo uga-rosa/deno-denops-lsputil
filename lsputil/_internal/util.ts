@@ -1,4 +1,4 @@
-import { api, batch, Denops, fn, LSP } from "../deps.ts";
+import { api, batch, type Denops, fn, type LSP } from "../deps.ts";
 
 const ENCODER = new TextEncoder();
 export function byteLength(
