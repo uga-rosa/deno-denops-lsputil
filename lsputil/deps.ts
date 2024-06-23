@@ -7,16 +7,9 @@ export { batch } from "https://deno.land/x/denops_std@v6.1.0/batch/mod.ts";
 
 export * as LSP from "npm:vscode-languageserver-types@3.17.5";
 
-export {
-  dirname,
-  fromFileUrl,
-  toFileUrl,
-} from "https://deno.land/std@0.217.0/path/mod.ts";
-export { existsSync } from "https://deno.land/std@0.217.0/fs/mod.ts";
+export { dirname, fromFileUrl, toFileUrl } from "jsr:@std/path";
+export { existsSync } from "jsr:@std/fs";
 
 // For test
-export {
-  assertEquals,
-  assertRejects,
-} from "https://deno.land/std@0.217.0/assert/mod.ts";
-export { test } from "https://deno.land/x/denops_test@v1.6.2/mod.ts";
+export { assertEquals, assertRejects } from "jsr:@std/assert";
+export { test } from "jsr:@denops/test";
