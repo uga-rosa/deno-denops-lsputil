@@ -1,4 +1,4 @@
-import { type Denops, dirname, existsSync, fn, type LSP } from "../deps.ts";
+import { type Denops, dirname, fs, fn, type LSP } from "../deps.ts";
 import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { applyTextEdits } from "../text_edit/mod.ts";
 import { uriToBufnr, uriToFname } from "../uri/mod.ts";
@@ -46,7 +46,7 @@ async function createFile(
 ) {
   const path = uriToFname(change.uri);
   if (
-    !existsSync(path) ||
+    !fs.existsSync(path) ||
     (change.options?.overwrite || !change.options?.ignoreIfExists)
   ) {
     await Deno.mkdir(dirname(path), { recursive: true });
@@ -62,7 +62,7 @@ async function renameFile(
   const oldPath = uriToFname(change.oldUri);
   const newPath = uriToFname(change.newUri);
 
-  if (existsSync(newPath)) {
+  if (fs.existsSync(newPath)) {
     if (!change.options?.overwrite || change.options.ignoreIfExists) {
       printError(
         denops,
@@ -106,7 +106,7 @@ async function deleteFile(
   change: LSP.DeleteFile,
 ) {
   const path = uriToFname(change.uri);
-  if (!existsSync(path)) {
+  if (!fs.existsSync(path)) {
     if (!change.options?.ignoreIfNotExists) {
       printError(
         denops,

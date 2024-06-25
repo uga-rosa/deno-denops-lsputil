@@ -8,7 +8,7 @@ export { batch } from "https://deno.land/x/denops_std@v6.5.0/batch/mod.ts";
 export * as LSP from "npm:vscode-languageserver-types@3.17.5";
 
 export { dirname, fromFileUrl, toFileUrl } from "jsr:@std/path@0.225.2";
-export { existsSync } from "jsr:@std/fs@0.229.3";
+export * as fs from "jsr:@std/fs@0.229.3";
 
 // For test
 export { assertEquals, assertRejects } from "jsr:@std/assert@0.226.0";
