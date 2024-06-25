@@ -1,4 +1,4 @@
-import { type Denops, dirname, fs, fn, type LSP } from "../deps.ts";
+import { type Denops, dirname, fn, fs, type LSP } from "../deps.ts";
 import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { applyTextEdits } from "../text_edit/mod.ts";
 import { uriToBufnr, uriToFname } from "../uri/mod.ts";
