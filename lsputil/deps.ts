@@ -11,5 +11,10 @@ export { dirname, fromFileUrl, toFileUrl } from "jsr:@std/path@0.225.2";
 export * as fs from "jsr:@std/fs@0.229.3";
 
 // For test
-export { assertEquals, assertRejects } from "jsr:@std/assert@0.226.0";
+export {
+  assertEquals,
+  assertGreater,
+  assertLess,
+  assertRejects,
+} from "jsr:@std/assert@0.226.0";
 export { test } from "jsr:@denops/test@2.0.1";
