@@ -15,13 +15,10 @@ export class Position {
    * @returns A number smaller than zero if this position is before the given position, a number greater than zero if this position is after the given position, or zero when this and the given position are equal.
    */
   compareTo(other: Position): number {
-    if (this.isEqual(other)) {
-      return 0;
-    } else if (this.isAfter(other)) {
-      return 1;
-    } else {
-      return -1;
+    if (this.line === other.line) {
+      return this.character - other.character;
     }
+    return this.line - other.line;
   }
 
   /**
@@ -41,7 +38,9 @@ export class Position {
    * @returns `true` if position is on a greater line or on the same line on a greater or equal character.
    */
   isAfterOrEqual(other: Position): boolean {
-    return this.isAfter(other) || this.isEqual(other);
+    return this.line === other.line
+      ? this.character >= other.character
+      : this.line > other.line;
   }
 
   /**
@@ -61,7 +60,9 @@ export class Position {
    * @returns `true` if position is on a smaller line or on the same line on a smaller or equal character.
    */
   isBeforeOrEqual(other: Position): boolean {
-    return this.isBefore(other) || this.isEqual(other);
+    return this.line === other.line
+      ? this.character <= other.character
+      : this.line < other.line;
   }
 
   /**
@@ -79,11 +80,8 @@ export class Position {
    * @param characterDelta - Delta value for the character value, default is `0`.
    * @returns A position which line and character is the sum of the current line and character and the corresponding deltas.
    */
-  translate(lineDelta?: number, characterDelta?: number): Position {
-    return new Position(
-      this.line + (lineDelta ?? 0),
-      this.character + (characterDelta ?? 0),
-    );
+  translate(lineDelta: number = 0, characterDelta: number = 0): Position {
+    return this.with(this.line + lineDelta, this.character + characterDelta);
   }
 
   /**
@@ -92,7 +90,10 @@ export class Position {
    * @param character Value that should be used as character value, default is the existing value
    * @returns A position where line and character are replaced by the given values.
    */
-  with(line?: number, character?: number): Position {
-    return new Position(line ?? this.line, character ?? this.character);
+  with(line: number = this.line, character: number = this.character): Position {
+    if (line === this.line && character === this.character) {
+      return this;
+    }
+    return new Position(line, character);
   }
 }
