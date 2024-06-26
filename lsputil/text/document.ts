@@ -129,11 +129,8 @@ export class TextDocument {
   }
 
   validateRange(range: Range): Range {
-    let start = this.validatePosition(range.start);
-    let end = this.validatePosition(range.end);
-    if (start.isAfter(end)) {
-      [start, end] = [end, start];
-    }
+    const start = this.validatePosition(range.start);
+    const end = this.validatePosition(range.end);
     return new Range(start, end);
   }
 }
