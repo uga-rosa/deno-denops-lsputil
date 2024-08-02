@@ -1,7 +1,29 @@
 {
   "name": "@uga-rosa/denops-lsputil",
   "version": "0.9.4",
-  "exports": "./lsputil/mod.ts",
+  "exports": {
+    ".": "./lsputil/mod.ts",
+    "./assert": "./lsputil/assert/mod.ts",
+    "./buffer": "./lsputil/buffer/mod.ts",
+    "./cursor": "./lsputil/cursor/mod.ts",
+    "./line": "./lsputil/line/mod.ts",
+    "./lsp": "./lsputil/lsp/mod.ts",
+    "./offset_encoding": "./lsputil/offset_encoding/mod.ts",
+    "./position": "./lsputil/position/mod.ts",
+    "./range": "./lsputil/range/mod.ts",
+    "./snippet": "./lsputil/snippet/mod.ts",
+    "./text/document": "./lsputil/text/document.ts",
+    "./text/line": "./lsputil/text/line.ts",
+    "./text/position": "./lsputil/text/position.ts",
+    "./text/range": "./lsputil/text/range.ts",
+    "./text_edit": "./lsputil/text_edit/mod.ts",
+    "./uri": "./lsputil/uri/mod.ts",
+    "./util": "./lsputil/util/mod.ts",
+    "./workspace_edit": "./lsputil/workspace_edit/mod.ts"
+  },
+  "imports": {
+    "@denops/std": "jsr:@denops/std@^7"
+  },
   "lock": false,
   "tasks": {
     "pre-commit": "deno task fmt && deno task check && deno task test",

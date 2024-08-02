@@ -1,4 +1,4 @@
-import { assertEquals, type Fn, fn, test } from "../deps.ts";
+import { assertEquals, fn, test } from "../deps.ts";
 import { applyTextEdits } from "./mod.ts";
 import { createRange } from "../_internal/util.ts";
 import { assertBuffer, setup } from "../_internal/test_util.ts";
@@ -43,7 +43,7 @@ const suites = {
 const marks = [
   { mark: "'a", pos: [0, 1, 7, 0], file: "" },
   { mark: "'b", pos: [0, 1, 13, 0], file: "" },
-] satisfies Fn.MarkInformation[];
+] satisfies fn.MarkInformation[];
 
 test({
   mode: "all",

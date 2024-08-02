@@ -1,9 +1,8 @@
-export type { Denops } from "https://deno.land/x/denops_std@v6.5.0/mod.ts";
-export * as fn from "https://deno.land/x/denops_std@v6.5.0/function/mod.ts";
-export * as Fn from "https://deno.land/x/denops_std@v6.5.0/function/types.ts";
-export * as api from "https://deno.land/x/denops_std@v6.5.0/function/nvim/mod.ts";
-export * as op from "https://deno.land/x/denops_std@v6.5.0/option/mod.ts";
-export { batch } from "https://deno.land/x/denops_std@v6.5.0/batch/mod.ts";
+export type { Denops } from "@denops/std";
+export * as fn from "@denops/std/function";
+export * as api from "@denops/std/function/nvim";
+export * as op from "@denops/std/option";
+export { batch } from "@denops/std/batch";
 
 export * as LSP from "npm:vscode-languageserver-types@3.17.5";
 
