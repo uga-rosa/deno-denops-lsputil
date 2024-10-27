@@ -52,7 +52,7 @@ test({
     for (const [mode, suite] of Object.entries(suites)) {
       const { textEdit, expectedBuffer } = suite;
       await t.step({
-        name: mode,
+        name: `${mode}: use current buffer`,
         fn: async () => {
           const bufnr = await setup(denops, origBuffer, true);
           for (const info of marks) {
@@ -63,6 +63,30 @@ test({
           for (const info of marks) {
             assertEquals(await fn.getpos(denops, info.mark), info.pos);
           }
+        },
+      });
+      await t.step({
+        name: `${mode}: use another buffer`,
+        fn: async () => {
+          const bufnr = await setup(denops, origBuffer, true);
+          for (const info of marks) {
+            await fn.setpos(denops, info.mark, info.pos);
+          }
+          await denops.cmd("new");
+          await denops.cmd("call setline(1, 'foo')");
+          await denops.cmd("undo");
+          await applyTextEdits(denops, bufnr, [textEdit]);
+          await denops.cmd(`${bufnr}buffer`);
+          await assertBuffer(
+            denops,
+            bufnr,
+            expectedBuffer.map((v) => v.replace("|", "")),
+            false,
+          );
+          for (const info of marks) {
+            assertEquals(await fn.getpos(denops, info.mark), info.pos);
+          }
+          await denops.cmd("%bwipeout!"); // Clear buffers to prevent "Not enough room" error.
         },
       });
     }
