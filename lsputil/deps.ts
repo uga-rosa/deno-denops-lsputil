@@ -16,4 +16,4 @@ export {
   assertLess,
   assertRejects,
 } from "jsr:@std/assert@0.226.0";
-export { test } from "jsr:@denops/test@2.0.1";
+export { test } from "jsr:@denops/test@3.0.4";
