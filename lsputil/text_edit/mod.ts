@@ -1,14 +1,123 @@
-import { getCursor, setCursor } from "../cursor/mod.ts";
-import { type Denops, fn, type LSP, op } from "../deps.ts";
-import {
-  bufLineCount,
-  byteLength,
-  isPositionBefore,
-} from "../_internal/util.ts";
+import { type Denops, execute, is, type LSP, ulid } from "../deps.ts";
+import { isPositionBefore } from "../_internal/util.ts";
 import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Range } from "../range/mod.ts";
-import { getLine, setText } from "../buffer/mod.ts";
 import { ensureBufnr } from "../assert/mod.ts";
+
+const cacheKey = "denops-lsputil/text_edit@0";
+
+async function ensureApplyer(denops: Denops): Promise<string> {
+  if (is.String(denops.context[cacheKey])) {
+    return denops.context[cacheKey];
+  }
+  const suffix = ulid();
+  const fnName = `DenopsLsputilApplyTextEdit_${suffix}`;
+  denops.context[cacheKey] = fnName;
+
+  const script = `
+  function ${fnName}(bufnr, text_edits) abort
+    if !bufexists(a:bufnr)
+      return
+    endif
+
+    let cursor = [-1, -1, -1, -1]
+    if bufnr() == a:bufnr
+      let virtualedit = &virtualedit
+      let &virtualedit = 'all'
+      let cursor = getcharpos('.')
+      let &virtualedit = virtualedit
+
+      " Convert cursor position into LSP position.
+      let cursor[1] -= 1
+      let cursor[2] -= 1
+    endif
+    let is_cursor_fixed = v:false
+
+    let mark_info = getmarklist(a:bufnr)->filter({_, v -> v.mark =~# '^''\\a$'})
+
+    for text_edit in a:text_edits
+      let line_count = getbufinfo(a:bufnr)[0].linecount
+      if text_edit.range.start.line >= line_count
+        " Append lines to the end
+        call appendbufline(a:bufnr, '$', text_edit.newText)
+      else
+        let range = text_edit.range
+
+        " Fix range
+        if range.end.line >= line_count
+          " Some LSP servers may return +1 range of the buffer content
+          let range.end.line = line_count - 1
+          let range.end.character = strlen(getbufline(a:bufnr, 1)[0])
+        elseif range.end.character > strchars(getbufline(a:bufnr, range.end.line + 1)[0])
+          let range.end.character = strchars(getbufline(a:bufnr, range.end.line + 1)[0])
+          if !empty(text_edit.newText) && text_edit.newText[-1] ==# ''
+            " Properly handling replacement that go beyond the end of a line,
+            " and ensuring no extra empty lines are added.
+            call remove(text_edit.newText, -1)
+          endif
+        endif
+      endif
+
+      let prefix = strcharpart(getbufline(a:bufnr, range.start.line + 1)[0], 0, range.start.character)
+      let suffix = strcharpart(getbufline(a:bufnr, range.end.line + 1)[0], range.end.character)
+      let lastNewText = get(text_edit.newText, -1, '')
+      if empty(text_edit.newText)
+        let text_edit.newText = [prefix . suffix]
+      else
+        let text_edit.newText[0] = prefix . text_edit.newText[0]
+        let text_edit.newText[-1] .= suffix
+      endif
+      call appendbufline(a:bufnr, range.end.line + 1, text_edit.newText)
+      call deletebufline(a:bufnr, range.start.line + 1, range.end.line + 1)
+
+      " If range.end is before or at the same position as the cursor,
+      " fix the cursor position.
+      if range.end.line < cursor[1] ||
+        \\  (range.end.line == cursor[1] && range.end.character <= cursor[2])
+        if range.end.line == cursor[1]
+          let cursor[2] += -range.end.character + strchars(lastNewText)
+          if len(text_edit.newText) == 1
+            let cursor[2] += range.start.character
+          endif
+        endif
+        let cursor[1] += len(text_edit.newText) - (range.end.line - range.start.line + 1)
+        let is_cursor_fixed = v:true
+      endif
+    endfor
+
+    let line_count = getbufinfo(a:bufnr)[0].linecount
+
+    " Restore local marks
+    for info in mark_info
+      let info.pos[1] = min([info.pos[1], line_count])
+      let info.pos[2] = min([info.pos[2], strlen(getbufline(a:bufnr, info.pos[1])[0])])
+      call setpos(info.mark, info.pos)
+    endfor
+
+    " Apply fixed cursor position
+    if is_cursor_fixed
+      const line = getbufline(a:bufnr, cursor[1] + 1)[0]
+      if cursor[1] < line_count && cursor[2] <= strchars(line)
+        let cursor[1] += 1
+        let cursor[2] += 1
+        call setcharpos('.', cursor)
+      endif
+    endif
+
+    " Remove final line if needed
+    if getbufvar(a:bufnr, '&endofline') ||
+      \\  (getbufvar(a:bufnr, '&fixendofline') &&
+      \\     !getbufvar(a:bufnr, '&binary'))
+      if getbufline(a:bufnr, '$')[0] ==# ''
+        call deletebufline(denops, bufnr, '$')
+      endif
+    endif
+  endfunction
+  `;
+  await execute(denops, script);
+
+  return fnName;
+}
 
 function fixReversedRange(
   range: LSP.Range,
@@ -43,111 +152,25 @@ export async function applyTextEdits(
     isPositionBefore(a.range.start, b.range.start) ? 1 : -1
   );
 
-  // Save local marks
-  const markInfo = (await fn.getmarklist(denops, bufnr))
-    .filter((info) => /^'[a-z]$/.test(info.mark));
-
-  // Store cursor if bufnr points current buffer.
-  const cursor = bufnr === await fn.bufnr(denops)
-    ? await getCursor(denops)
-    : { line: -1, character: -1 };
-  let isCursorFixed = false;
-
-  let isFirstCall = true;
-  for (const textEdit of textEdits) {
-    const newText = textEdit.newText.replace(/\r\n?/g, "\n");
-    const replacement = newText.split("\n");
-    const range = await toUtf16Range(
-      denops,
-      bufnr,
-      textEdit.range,
-      offsetEncoding,
-    );
-    const lineCount = await bufLineCount(denops, bufnr);
-    if (range.start.line >= lineCount) {
-      // Append lines to the end
-      if (isFirstCall) {
-        await fn.appendbufline(denops, bufnr, "$", replacement);
-      } else {
-        await denops.cmd(
-          `undojoin | call appendbufline(bufnr, "$", replacement)`,
-          { bufnr, replacement },
-        );
+  const fnName = await ensureApplyer(denops);
+  await denops.call(
+    fnName,
+    bufnr,
+    await (async () => {
+      const retval = [];
+      for (const textEdit of textEdits) {
+        retval.push({
+          ...textEdit,
+          range: await toUtf16Range(
+            denops,
+            bufnr,
+            textEdit.range,
+            offsetEncoding,
+          ),
+          newText: textEdit.newText.replace(/\r\n?/g, "\n").split("\n"),
+        });
       }
-    } else {
-      const endLine = await getLine(
-        denops,
-        bufnr,
-        Math.min(range.end.line, lineCount - 1),
-      );
-      // Fix range
-      if (range.end.line >= lineCount) {
-        // Some LSP servers may return +1 range of the buffer content
-        range.end = {
-          line: lineCount - 1,
-          character: endLine.length,
-        };
-      } else if (range.end.character > endLine.length) {
-        range.end.character = endLine.length;
-        if (newText.endsWith("\n")) {
-          // Properly handling replacement that go beyond the end of a line,
-          // and ensuring no extra empty lines are added.
-          replacement.pop();
-        }
-      }
-      await setText(denops, bufnr, range, replacement, {
-        undojoin: !isFirstCall,
-      });
-
-      // If range.end is before or at the same position as the cursor,
-      // fix the cursor position.
-      if (isPositionBefore(range.end, cursor, true)) {
-        if (range.end.line === cursor.line) {
-          cursor.character += -range.end.character +
-            replacement[replacement.length - 1].length;
-          if (replacement.length === 1) {
-            cursor.character += range.start.character;
-          }
-        }
-        cursor.line += replacement.length -
-          (range.end.line - range.start.line + 1);
-        isCursorFixed = true;
-      }
-    }
-    if (isFirstCall) {
-      isFirstCall = false;
-    }
-  }
-
-  const lineCount = await bufLineCount(denops, bufnr);
-
-  // Restore local marks
-  await Promise.all(markInfo.map(async (info) => {
-    // row
-    info.pos[1] = Math.min(info.pos[1], lineCount);
-    const line = await getLine(denops, bufnr, info.pos[1] - 1);
-    // col
-    info.pos[2] = Math.min(info.pos[2], byteLength(line));
-    await fn.setpos(denops, info.mark, info.pos);
-  }));
-
-  // Apply fixed cursor position
-  if (isCursorFixed) {
-    const line = await getLine(denops, bufnr, cursor.line);
-    if (cursor.line < lineCount && cursor.character <= line.length) {
-      await setCursor(denops, cursor);
-    }
-  }
-
-  // Remove final line if needed
-  if (
-    (await op.endofline.getBuffer(denops, bufnr)) ||
-    (await op.fixendofline.getBuffer(denops, bufnr) &&
-      !(await op.binary.getBuffer(denops, bufnr)))
-  ) {
-    const lastLine = (await fn.getbufline(denops, bufnr, "$"))[0];
-    if (lastLine === "") {
-      await fn.deletebufline(denops, bufnr, "$");
-    }
-  }
+      return retval;
+    })(),
+  );
 }
