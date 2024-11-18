@@ -89,6 +89,34 @@ test({
           await denops.cmd("%bwipeout!"); // Clear buffers to prevent "Not enough room" error.
         },
       });
+      await t.step({
+        name:
+          `${mode}: a single undo can revert changes made by a list of textEdits`,
+        fn: async () => {
+          const buffer = [
+            "あいうえお",
+            "かきくけこ",
+          ];
+          await fn.setline(denops, 1, buffer);
+          const bufnr = await fn.bufnr(denops);
+          await denops.cmd("new");
+          await applyTextEdits(denops, bufnr, [{
+            range: createRange(0, 0, 0, 1),
+            newText: "イロハ",
+          }, {
+            range: createRange(1, 1, 1, 3),
+            newText: "ニホヘト",
+          }]);
+          await denops.cmd("quit");
+          assertEquals(await fn.getline(denops, 1, "$"), [
+            "イロハいうえお",
+            "かニホヘトけこ",
+          ]);
+          await denops.cmd("undo");
+          assertEquals(await fn.getline(denops, 1, "$"), buffer);
+          await denops.cmd("%bwipeout!");
+        },
+      });
     }
   },
 });
