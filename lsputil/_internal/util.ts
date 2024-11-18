@@ -59,11 +59,11 @@ export async function bufLineCount(
 
 export async function printError(
   denops: Denops,
-  message: string,
+  message: unknown,
 ): Promise<void> {
   await batch(denops, async (helper) => {
     await helper.cmd("echohl Error");
-    await helper.cmd("echomsg l:message", { message });
+    await helper.cmd("echomsg l:message", { message: String(message) });
     await helper.cmd("echohl NONE");
   });
 }
