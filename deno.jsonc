@@ -1,6 +1,6 @@
 {
   "name": "@uga-rosa/denops-lsputil",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "exports": {
     ".": "./lsputil/mod.ts",
     "./assert": "./lsputil/assert/mod.ts",
