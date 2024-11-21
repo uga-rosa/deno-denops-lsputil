@@ -4,7 +4,7 @@ import type { OffsetEncoding } from "../offset_encoding/mod.ts";
 import { toUtf16Range } from "../range/mod.ts";
 import { ensureBufnr } from "../assert/mod.ts";
 
-const cacheKey = "denops-lsputil/text_edit@0";
+const cacheKey = "denops-lsputil/text_edit@1";
 
 async function ensureApplyer(denops: Denops): Promise<string> {
   if (is.String(denops.context[cacheKey])) {
@@ -37,12 +37,11 @@ async function ensureApplyer(denops: Denops): Promise<string> {
 
     for text_edit in a:text_edits
       let line_count = getbufinfo(a:bufnr)[0].linecount
-      if text_edit.range.start.line >= line_count
+      let range = text_edit.range
+      if range.start.line >= line_count
         " Append lines to the end
         call appendbufline(a:bufnr, '$', text_edit.newText)
       else
-        let range = text_edit.range
-
         " Fix range
         if range.end.line >= line_count
           " Some LSP servers may return +1 range of the buffer content
@@ -109,7 +108,7 @@ async function ensureApplyer(denops: Denops): Promise<string> {
       \\  (getbufvar(a:bufnr, '&fixendofline') &&
       \\     !getbufvar(a:bufnr, '&binary'))
       if getbufline(a:bufnr, '$')[0] ==# ''
-        call deletebufline(denops, bufnr, '$')
+        call deletebufline(a:bufnr, '$')
       endif
     endif
   endfunction

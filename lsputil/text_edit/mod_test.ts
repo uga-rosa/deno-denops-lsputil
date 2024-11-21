@@ -38,6 +38,16 @@ const suites = {
       "すせ|けこ",
     ],
   },
+  appendAtEOF: {
+    textEdit: {
+      range: createRange(2, 0, 2, 0),
+      newText: "",
+    },
+    expectedBuffer: [
+      "あいうえお",
+      "かきく|けこ",
+    ],
+  },
 };
 
 const marks = [
